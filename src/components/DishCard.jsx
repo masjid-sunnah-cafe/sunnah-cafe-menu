@@ -27,11 +27,6 @@ export default function DishCard({ dish, onOpen, lang }) {
       {/* Image with inner padding */}
       <div className="p-2.5 pb-0">
         <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-brand-gold/20 border border-brand-border/40">
-          {/* Top patterned strip */}
-          <div className="absolute left-0 right-0 top-0 z-10 h-3 opacity-100" style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='16' height='12' viewBox='0 0 16 12' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='16' height='12' fill='%23F2EBE1'/%3E%3Cpolygon points='0,12 8,0 16,12' fill='%239A3A26'/%3E%3Cpolygon points='4,12 8,6 12,12' fill='%23D9A752'/%3E%3C/svg%3E")`,
-            backgroundSize: '16px 12px',
-          }} />
           <img
             src={dish.image}
             alt={dish.name[lang]}
