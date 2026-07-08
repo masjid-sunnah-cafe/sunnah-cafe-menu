@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
-import { UI } from '../data/menu'
+import { UI } from '../data/i18n'
+import { Badge } from './ui/badge'
 
 export default function DishCard({ dish, onOpen, lang }) {
   function activate(e) {
@@ -26,7 +27,7 @@ export default function DishCard({ dish, onOpen, lang }) {
     >
       {/* Image with inner padding */}
       <div className="p-2.5 pb-0">
-        <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-brand-gold/20 border border-brand-border/40">
+        <div className="relative aspect-[4/3] overflow-hidden rounded-xl border border-brand-border/40 bg-brand-gold/20">
           <img
             src={dish.image}
             alt={dish.name[lang]}
@@ -38,20 +39,18 @@ export default function DishCard({ dish, onOpen, lang }) {
 
       {/* Content */}
       <div className="px-3 pb-3 pt-2.5 md:px-4 md:pb-4 md:pt-3">
-        <h3 className="font-serif text-[14px] font-bold leading-snug text-brand-green md:text-[16px]">
+        <h3 className="font-display text-[14px] font-bold leading-snug text-brand-green md:text-[16px]">
           {dish.name[lang]}
         </h3>
         <p className="mt-1 line-clamp-2 text-[11px] leading-relaxed text-brand-text-muted md:text-xs">
           {dish.description[lang]}
         </p>
         <div className="mt-2 flex items-center justify-between gap-2">
-          <span className="text-[15px] font-bold text-brand-text-dark md:text-base">
+          <span className="font-display text-[15px] font-bold text-brand-text-dark md:text-base">
             ${dish.price.toFixed(2)}
           </span>
           {dish.isPopular && (
-            <span className="rounded-full bg-brand-orange px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white md:text-[10px]">
-              {UI.popular[lang]}
-            </span>
+            <Badge variant="popular">{UI.popular[lang]}</Badge>
           )}
         </div>
       </div>

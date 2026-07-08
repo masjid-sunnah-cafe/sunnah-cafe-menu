@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
+import { Button } from './ui/button'
 
-/* Colored dot/diamond shapes matching the mockup */
+/* Colored icon shapes per category */
 const SHAPE_MAP = {
   'food': <svg className="h-4 w-4 text-brand-orange" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 8c-2.21 0-4 1.79-4 4s1.79 4 4 4h12c2.21 0 4-1.79 4-4s-1.79-4-4-4H6zm6 6c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>,
   'pastry': <svg className="h-4 w-4 text-brand-gold" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 12l10 10 10-10L12 2zm0 14.5L7.5 12 12 7.5 16.5 12 12 16.5z"/></svg>,
@@ -18,28 +19,24 @@ export default function CategoryTabs({ categories, activeCategory, onSelect, lan
           aria-label="Menu categories"
           className="flex gap-3 overflow-x-auto no-scrollbar pb-1 md:justify-center"
         >
-        {categories.map((cat) => {
-          const active = cat.id === activeCategory
-          return (
-            <motion.button
-              key={cat.id}
-              type="button"
-              role="tab"
-              aria-selected={active}
-              onClick={() => onSelect(cat.id)}
-              whileTap={{ scale: 0.96 }}
-              className={
-                'flex items-center gap-2.5 whitespace-nowrap rounded-full px-5 py-2.5 text-[15px] font-medium transition-colors md:px-6 md:py-3 md:text-base ' +
-                (active
-                  ? 'bg-brand-green text-brand-card shadow-md'
-                  : 'border border-brand-border bg-brand-card text-brand-text-dark hover:border-brand-gold/40')
-              }
-            >
-              {SHAPE_MAP[cat.id] || <span className="inline-block h-3 w-3 rounded-full bg-brand-gold" />}
-              <span>{cat.label[lang]}</span>
-            </motion.button>
-          )
-        })}
+          {categories.map((cat) => {
+            const active = cat.id === activeCategory
+            return (
+              <motion.div key={cat.id} whileTap={{ scale: 0.96 }}>
+                <Button
+                  type="button"
+                  role="tab"
+                  aria-selected={active}
+                  onClick={() => onSelect(cat.id)}
+                  variant={active ? 'brand' : 'outline'}
+                  className="flex items-center gap-2.5 whitespace-nowrap px-5 py-2.5 text-[15px] md:px-6 md:py-3 md:text-base"
+                >
+                  {SHAPE_MAP[cat.id] || <span className="inline-block h-3 w-3 rounded-full bg-brand-gold" />}
+                  <span>{cat.label[lang]}</span>
+                </Button>
+              </motion.div>
+            )
+          })}
         </div>
       </div>
     </nav>

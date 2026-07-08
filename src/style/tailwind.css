@@ -2,11 +2,72 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  @apply bg-brand-bg text-brand-text-dark font-body antialiased;
+/* ── shadcn/ui CSS variable tokens ── */
+@layer base {
+  :root {
+    /* Map to brand palette */
+    --background:   36 67% 96%;   /* #F9F4EC */
+    --foreground:   18 34% 13%;   /* #2D1E15 */
+
+    --card:         33 47% 92%;   /* #F2EBE1 */
+    --card-foreground: 18 34% 13%;
+
+    --popover:      33 47% 92%;
+    --popover-foreground: 18 34% 13%;
+
+    --primary:      20 55% 32%;   /* #1C120C-ish dark */
+    --primary-foreground: 36 67% 96%;
+
+    --secondary:    33 47% 92%;
+    --secondary-foreground: 18 34% 13%;
+
+    --muted:        33 30% 88%;
+    --muted-foreground: 15 10% 49%; /* brand-text-muted */
+
+    --accent:       38 64% 58%;   /* brand-gold */
+    --accent-foreground: 18 34% 13%;
+
+    --destructive:  8 59% 37%;    /* brand-red */
+    --destructive-foreground: 36 67% 96%;
+
+    --border:       36 35% 91%;   /* brand-border */
+    --input:        36 35% 91%;
+    --ring:         38 64% 58%;   /* brand-gold */
+    --radius:       0.75rem;
+  }
+
+  .dark {
+    --background:   20 24% 8%;
+    --foreground:   36 67% 96%;
+    --card:         20 20% 12%;
+    --card-foreground: 36 67% 96%;
+    --popover:      20 20% 12%;
+    --popover-foreground: 36 67% 96%;
+    --primary:      38 64% 58%;
+    --primary-foreground: 20 24% 8%;
+    --secondary:    20 20% 16%;
+    --secondary-foreground: 36 67% 96%;
+    --muted:        20 20% 16%;
+    --muted-foreground: 33 15% 60%;
+    --accent:       38 64% 58%;
+    --accent-foreground: 20 24% 8%;
+    --destructive:  8 59% 37%;
+    --destructive-foreground: 36 67% 96%;
+    --border:       20 20% 18%;
+    --input:        20 20% 18%;
+    --ring:         38 64% 58%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-brand-bg text-brand-text-dark font-body antialiased;
+  }
 }
 
-/* Hide horizontal scrollbar on the category tab strip */
+/* ── Utility: hide scrollbar ── */
 .no-scrollbar {
   scrollbar-width: none;
   -ms-overflow-style: none;
