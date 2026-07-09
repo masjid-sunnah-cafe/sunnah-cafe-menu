@@ -1,5 +1,5 @@
 import zahiibaLogo from '../assets/images/Zahiiba.png'
-import { UI } from '../data/i18n'
+import { UI, getL10n, getL10nArray } from '../data/i18n'
 import {
   Dialog,
   DialogContent,
@@ -22,10 +22,10 @@ export default function DishDetailSheet({ dish, onClose, lang }) {
       <DialogContent className="max-h-[92dvh] overflow-y-auto p-0">
         {/* Visually hidden title for screen readers */}
         <DialogTitle className="sr-only">
-          {dish?.name[lang] ?? 'Dish details'}
+          {dish ? getL10n(dish.name, lang) : 'Dish details'}
         </DialogTitle>
         <DialogDescription className="sr-only">
-          {dish?.description[lang] ?? ''}
+          {dish ? getL10n(dish.description, lang) : ''}
         </DialogDescription>
 
         {dish && (
@@ -41,7 +41,7 @@ export default function DishDetailSheet({ dish, onClose, lang }) {
               <div className="relative overflow-hidden rounded-2xl">
                 <img
                   src={dish.image}
-                  alt={dish.name[lang]}
+                  alt={getL10n(dish.name, lang)}
                   className="aspect-[4/3] w-full object-cover"
                 />
                 <div className="absolute bottom-3 right-3 h-12 w-12 overflow-hidden rounded-full border-2 border-white/60 shadow-lg">
@@ -55,16 +55,16 @@ export default function DishDetailSheet({ dish, onClose, lang }) {
               {/* Title & price */}
               <div className="flex items-start justify-between gap-4">
                 <h2 className="font-display text-2xl font-bold leading-tight text-brand-text-dark md:text-[28px]">
-                  {dish.name[lang]}
+                  {getL10n(dish.name, lang)}
                 </h2>
                 <span className="whitespace-nowrap rounded-xl bg-brand-gold/20 px-3 py-1 font-display text-lg font-bold text-brand-gold md:text-xl">
                   ${dish.price.toFixed(2)}
                 </span>
               </div>
 
-              <p className="mt-1 text-sm text-brand-text-muted">{dish.subtitle[lang]}</p>
+              <p className="mt-1 text-sm text-brand-text-muted">{getL10n(dish.subtitle, lang)}</p>
               <p className="mt-3 text-sm leading-[1.7] text-brand-text-dark md:text-[15px]">
-                {dish.longDescription[lang]}
+                {getL10n(dish.longDescription, lang)}
               </p>
 
               {/* Ingredients */}
@@ -73,7 +73,7 @@ export default function DishDetailSheet({ dish, onClose, lang }) {
                 {UI.ingredientsLabel[lang]}
               </h3>
               <div className="mt-2 flex flex-wrap gap-2">
-                {dish.ingredients[lang].map((ing) => (
+                {getL10nArray(dish.ingredients, lang).map((ing) => (
                   <Badge key={ing} variant="default">{ing}</Badge>
                 ))}
               </div>
@@ -88,10 +88,10 @@ export default function DishDetailSheet({ dish, onClose, lang }) {
                   <div className="mt-2 flex flex-wrap gap-2">
                     {dish.allergens.map((a) => (
                       <Badge
-                        key={a.label[lang]}
+                        key={getL10n(a.label, lang)}
                         variant={ALLERGEN_VARIANT[a.color] || 'default'}
                       >
-                        {a.label[lang]}
+                        {getL10n(a.label, lang)}
                       </Badge>
                     ))}
                   </div>
@@ -107,8 +107,8 @@ export default function DishDetailSheet({ dish, onClose, lang }) {
                 {dish.meta.halal && (
                   <Badge variant="halal">Halal</Badge>
                 )}
-                <Badge variant="meta">{dish.meta.spice[lang]}</Badge>
-                <Badge variant="meta">{dish.meta.serves[lang]}</Badge>
+                <Badge variant="meta">{getL10n(dish.meta.spice, lang)}</Badge>
+                <Badge variant="meta">{getL10n(dish.meta.serves, lang)}</Badge>
               </div>
 
               {/* Close CTA */}

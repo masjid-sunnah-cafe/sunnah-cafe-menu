@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { UI } from '../data/i18n'
+import { UI, getL10n } from '../data/i18n'
 import { Badge } from './ui/badge'
 
 export default function DishCard({ dish, onOpen, lang }) {
@@ -15,7 +15,7 @@ export default function DishCard({ dish, onOpen, lang }) {
       transition={{ duration: 0.22, ease: 'easeOut' }}
       role="button"
       tabIndex={0}
-      aria-label={`${dish.name[lang]}, $${dish.price.toFixed(2)}`}
+      aria-label={`${getL10n(dish.name, lang)}, $${dish.price.toFixed(2)}`}
       onClick={activate}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
@@ -30,7 +30,7 @@ export default function DishCard({ dish, onOpen, lang }) {
         <div className="relative aspect-[4/3] overflow-hidden rounded-xl border border-brand-border/40 bg-brand-gold/20">
           <img
             src={dish.image}
-            alt={dish.name[lang]}
+            alt={getL10n(dish.name, lang)}
             loading="lazy"
             className="h-full w-full object-cover"
           />
@@ -40,10 +40,10 @@ export default function DishCard({ dish, onOpen, lang }) {
       {/* Content */}
       <div className="px-3 pb-3 pt-2.5 md:px-4 md:pb-4 md:pt-3">
         <h3 className="font-display text-[14px] font-bold leading-snug text-brand-green md:text-[16px]">
-          {dish.name[lang]}
+          {getL10n(dish.name, lang)}
         </h3>
         <p className="mt-1 line-clamp-2 text-[11px] leading-relaxed text-brand-text-muted md:text-xs">
-          {dish.description[lang]}
+          {getL10n(dish.description, lang)}
         </p>
         <div className="mt-2 flex items-center justify-between gap-2">
           <span className="font-display text-[15px] font-bold text-brand-text-dark md:text-base">

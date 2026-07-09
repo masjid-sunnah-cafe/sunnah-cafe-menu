@@ -17,9 +17,11 @@ async function handle(res) {
   return data
 }
 
+const API_URL = import.meta.env.VITE_API_URL || ''
+
 // ── Auth ─────────────────────────────────────────────────────────────────────
 export async function login(password) {
-  const res = await fetch('/api/auth/login', {
+  const res = await fetch(`${API_URL}/api/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ password }),
@@ -35,12 +37,12 @@ export function logout() {
 
 // ── Dishes ───────────────────────────────────────────────────────────────────
 export async function fetchAllDishes() {
-  const res = await fetch('/api/dishes/all', { headers: authHeaders() })
+  const res = await fetch(`${API_URL}/api/dishes/all`, { headers: authHeaders() })
   return handle(res)
 }
 
 export async function createDish(data) {
-  const res = await fetch('/api/dishes', {
+  const res = await fetch(`${API_URL}/api/dishes`, {
     method: 'POST',
     headers: authHeaders(),
     body: JSON.stringify(data),
@@ -49,7 +51,7 @@ export async function createDish(data) {
 }
 
 export async function updateDish(id, data) {
-  const res = await fetch(`/api/dishes/${id}`, {
+  const res = await fetch(`${API_URL}/api/dishes/${id}`, {
     method: 'PATCH',
     headers: authHeaders(),
     body: JSON.stringify(data),
@@ -58,7 +60,7 @@ export async function updateDish(id, data) {
 }
 
 export async function deleteDish(id) {
-  const res = await fetch(`/api/dishes/${id}`, {
+  const res = await fetch(`${API_URL}/api/dishes/${id}`, {
     method: 'DELETE',
     headers: authHeaders(),
   })
@@ -69,7 +71,7 @@ export async function deleteDish(id) {
 export async function uploadImage(file) {
   const form = new FormData()
   form.append('image', file)
-  const res = await fetch('/api/upload', {
+  const res = await fetch(`${API_URL}/api/upload`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${getToken()}` }, // no Content-Type; browser sets multipart boundary
     body: form,

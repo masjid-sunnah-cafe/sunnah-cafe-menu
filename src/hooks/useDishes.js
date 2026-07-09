@@ -7,7 +7,8 @@ export function useDishes() {
 
   const fetch_ = useCallback(async () => {
     try {
-      const res = await fetch('/api/dishes')
+      const API_URL = import.meta.env.VITE_API_URL || ''
+      const res = await fetch(`${API_URL}/api/dishes`)
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
       setDishes(await res.json())
       setError(null)

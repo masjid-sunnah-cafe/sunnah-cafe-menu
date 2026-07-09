@@ -27,3 +27,19 @@ export function getDishesText(lang, count) {
   if (lang === 'SO') return `${count} cunto`
   return `${count} dish${count !== 1 ? 'es' : ''}`
 }
+
+export function getL10n(field, lang) {
+  if (!field) return ''
+  if (typeof field === 'string') return field
+  return field[lang] || field['EN'] || Object.values(field)[0] || ''
+}
+
+export function getL10nArray(field, lang) {
+  if (!field) return []
+  if (Array.isArray(field)) return field
+  if (field[lang] && Array.isArray(field[lang])) return field[lang]
+  if (field['EN'] && Array.isArray(field['EN'])) return field['EN']
+  const first = Object.values(field)[0]
+  if (Array.isArray(first)) return first
+  return []
+}
