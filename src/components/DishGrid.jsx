@@ -2,9 +2,13 @@ import DishCard from './DishCard'
 import { UI, getDishesText } from '../data/i18n'
 import { Separator } from './ui/separator'
 
-export default function DishGrid({ dishes, categoryLabel, onOpen, lang }) {
+export default function DishGrid({ dishes, categoryLabel, onOpen, lang, noResults }) {
   if (dishes.length === 0) {
-    return <p className="py-16 text-center text-brand-text-muted">{UI.noDishes[lang]}</p>
+    return (
+      <p className="py-16 text-center text-brand-text-muted">
+        {noResults ? UI.noResults[lang] : UI.noDishes[lang]}
+      </p>
+    )
   }
 
   return (

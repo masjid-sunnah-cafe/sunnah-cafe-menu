@@ -9,6 +9,7 @@ import { Input } from '../components/ui/input'
 import { Plus, Search, UtensilsCrossed, CheckCircle2, XCircle } from 'lucide-react'
 import { Toaster } from 'sonner'
 import { categories } from '../data/i18n'
+import { AdminLangProvider, useAdminLang } from '../lib/adminLang'
 
 // ── Stat card ─────────────────────────────────────────────────────────────────
 function StatCard({ icon: Icon, label, value, color }) {
@@ -26,7 +27,8 @@ function StatCard({ icon: Icon, label, value, color }) {
 }
 
 // ── Main admin page ───────────────────────────────────────────────────────────
-export default function AdminPage() {
+function AdminPageInner() {
+  const { t, lang } = useAdminLang()
   const [authed, setAuthed]         = useState(isLoggedIn())
   const [dishes, setDishes]         = useState([])
   const [loading, setLoading]       = useState(false)
@@ -121,9 +123,9 @@ export default function AdminPage() {
 
         {/* Stats row */}
         <div className="grid grid-cols-3 gap-3 md:gap-4">
-          <StatCard icon={UtensilsCrossed} label="Total dishes" value={dishes.length} color="bg-brand-gold/20 text-brand-gold" />
-          <StatCard icon={CheckCircle2}    label="In stock"     value={inStock}       color="bg-halal-bg text-halal" />
-          <StatCard icon={XCircle}         label="Out of stock" value={outStock}       color="bg-tag-bg-red text-tag-text-red" />
+          <StatCard icon={UtensilsCrossed} label={t.totalDishes} value={dishes.length} color="bg-brand-gold/20 text-brand-gold" />
+          <StatCard icon={CheckCircle2}    label={t.inStock}     value={inStock}       color="bg-halal-bg text-halal" />
+          <StatCard icon={XCircle}         label={t.outOfStock}  value={outStock}       color="bg-tag-bg-red text-tag-text-red" />
         </div>
 
         {/* Toolbar */}
@@ -135,7 +137,7 @@ export default function AdminPage() {
               <Input
                 value={search}
                 onChange={e => setSearch(e.target.value)}
-                placeholder="Search dishes…"
+                placeholder={t.searchDishes}
                 className="pl-9"
               />
             </div>
@@ -146,8 +148,8 @@ export default function AdminPage() {
               value={filterCat}
               onChange={e => setFilterCat(e.target.value)}
             >
-              <option value="all">All categories</option>
-              {categories.map(c => <option key={c.id} value={c.id}>{c.label.EN}</option>)}
+              <option value="all">{t.allCategories}</option>
+              {categories.map(c => <option key={c.id} value={c.id}>{c.label[lang]}</option>)}
             </select>
 
             {/* Stock filter */}
@@ -156,15 +158,15 @@ export default function AdminPage() {
               value={filterStock}
               onChange={e => setFilterStock(e.target.value)}
             >
-              <option value="all">All stock</option>
-              <option value="in">In stock</option>
-              <option value="out">Out of stock</option>
+              <option value="all">{t.allStock}</option>
+              <option value="in">{t.stockIn}</option>
+              <option value="out">{t.stockOut}</option>
             </select>
           </div>
 
           {/* Add button */}
           <Button onClick={openAdd} variant="brand" className="gap-2 shrink-0">
-            <Plus className="h-4 w-4" /> Add new dish
+            <Plus className="h-4 w-4" /> {t.addNewDish}
           </Button>
         </div>
 
@@ -172,7 +174,7 @@ export default function AdminPage() {
         {loading && (
           <div className="mt-12 flex flex-col items-center gap-3 text-brand-text-muted">
             <div className="h-8 w-8 animate-spin rounded-full border-4 border-brand-border border-t-brand-gold" />
-            <p className="text-sm">Loading dishes…</p>
+            <p className="text-sm">{t.loadingDishes}</p>
           </div>
         )}
 
@@ -180,8 +182,8 @@ export default function AdminPage() {
         {!loading && visible.length === 0 && (
           <div className="mt-16 flex flex-col items-center gap-3 text-center text-brand-text-muted">
             <UtensilsCrossed className="h-12 w-12 opacity-30" />
-            <p className="font-display text-lg font-bold text-brand-dark">No dishes found</p>
-            <p className="text-sm">{search || filterCat !== 'all' ? 'Try changing your filters.' : 'Add your first dish to get started.'}</p>
+            <p className="font-display text-lg font-bold text-brand-dark">{t.noDishesFound}</p>
+            <p className="text-sm">{search || filterCat !== 'all' ? t.tryChangingFilters : t.addFirstDish}</p>
           </div>
         )}
 
@@ -210,5 +212,13 @@ export default function AdminPage() {
         onSaved={handleSaved}
       />
     </div>
+  )
+}
+
+export default function AdminPage() {
+  return (
+    <AdminLangProvider>
+      <AdminPageInner />
+    </AdminLangProvider>
   )
 }

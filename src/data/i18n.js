@@ -20,6 +20,11 @@ export const UI = {
   backToMenu:       { EN: '← Back to menu', FI: '← Takaisin menuun', SO: '← Ku noqo liiska' },
   loading:          { EN: 'Loading menu…', FI: 'Ladataan menua…', SO: 'La rarayo liiska…' },
   error:            { EN: 'Could not load menu', FI: 'Menua ei voitu ladata', SO: 'Liiska lama soo qaadi karin' },
+  searchPlaceholder: { EN: 'Search the menu…', FI: 'Hae ruokalistalta…', SO: 'Ka raadi menu-ga…' },
+  noResults:         { EN: 'Nothing found — try another word.', FI: 'Ei tuloksia — kokeile toista hakusanaa.', SO: 'Waxba lama helin — isku day eray kale.' },
+  searchResults:     { EN: 'Search results', FI: 'Hakutulokset', SO: 'Natiijada raadinta' },
+  categoriesLabel:   { EN: 'Categories', FI: 'Kategoriat', SO: 'Qaybaha' },
+  close:             { EN: 'Close', FI: 'Sulje', SO: 'Xir' },
 }
 
 export function getDishesText(lang, count) {

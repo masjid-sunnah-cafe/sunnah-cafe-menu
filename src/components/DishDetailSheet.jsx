@@ -1,5 +1,6 @@
 import zahiibaLogo from '../assets/images/Zahiiba.png'
 import { UI, getL10n, getL10nArray } from '../data/i18n'
+import { formatPrice } from '../lib/format'
 import {
   Dialog,
   DialogContent,
@@ -58,7 +59,7 @@ export default function DishDetailSheet({ dish, onClose, lang }) {
                   {getL10n(dish.name, lang)}
                 </h2>
                 <span className="whitespace-nowrap rounded-xl bg-brand-gold/20 px-3 py-1 font-display text-lg font-bold text-brand-gold md:text-xl">
-                  ${dish.price.toFixed(2)}
+                  {formatPrice(dish.price)}
                 </span>
               </div>
 

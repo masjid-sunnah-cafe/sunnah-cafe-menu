@@ -6,8 +6,10 @@ import { Label } from '../ui/label'
 import { login } from '../../hooks/useAdmin'
 import { ChefHat, Lock } from 'lucide-react'
 import { toast } from 'sonner'
+import { useAdminLang, AdminLangSwitcher } from '../../lib/adminLang'
 
 export default function LoginForm({ onLogin }) {
+  const { t } = useAdminLang()
   const [password, setPassword] = useState('')
   const [loading, setLoading]   = useState(false)
 
@@ -18,7 +20,7 @@ export default function LoginForm({ onLogin }) {
       await login(password)
       onLogin()
     } catch {
-      toast.error('Wrong password. Try again.')
+      toast.error(t.wrongPassword)
     } finally {
       setLoading(false)
     }
@@ -36,6 +38,9 @@ export default function LoginForm({ onLogin }) {
       />
 
       <div className="relative w-full max-w-sm">
+        <div className="mb-4 flex justify-center">
+          <AdminLangSwitcher />
+        </div>
         {/* Card */}
         <div className="overflow-hidden rounded-3xl bg-brand-card shadow-2xl shadow-black/40">
           {/* Top accent */}
@@ -51,7 +56,7 @@ export default function LoginForm({ onLogin }) {
                 <h1 className="font-display text-2xl font-bold text-brand-dark">Zahiiba</h1>
                 <div className="mt-1 flex items-center justify-center gap-1.5 text-brand-text-muted">
                   <ChefHat className="h-3.5 w-3.5" />
-                  <span className="text-xs font-medium uppercase tracking-widest">Kitchen Dashboard</span>
+                  <span className="text-xs font-medium uppercase tracking-widest">{t.dashboard}</span>
                 </div>
               </div>
             </div>
@@ -59,7 +64,7 @@ export default function LoginForm({ onLogin }) {
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
                 <Label htmlFor="password" className="flex items-center gap-1.5">
-                  <Lock className="h-3.5 w-3.5" /> Kitchen password
+                  <Lock className="h-3.5 w-3.5" /> {t.passwordLabel}
                 </Label>
                 <Input
                   id="password"
@@ -69,7 +74,7 @@ export default function LoginForm({ onLogin }) {
                   className="mt-2 h-12 text-base"
                   value={password}
                   onChange={e => setPassword(e.target.value)}
-                  placeholder="Enter password"
+                  placeholder={t.passwordPlaceholder}
                   required
                 />
               </div>
@@ -80,17 +85,17 @@ export default function LoginForm({ onLogin }) {
                 disabled={loading}
                 className="h-12 w-full rounded-2xl text-base"
               >
-                {loading ? 'Entering…' : 'Enter kitchen →'}
+                {loading ? t.entering : t.enterKitchen}
               </Button>
             </form>
 
             <p className="mt-6 text-center text-[11px] text-brand-text-muted">
-              This area is for Zahiiba staff only.
+              {t.staffOnly}
             </p>
           </div>
         </div>
 
-        <p className="mt-4 text-center text-xs text-white/30">Zahiiba Admin · {new Date().getFullYear()}</p>
+        <p className="mt-4 text-center text-xs text-white/30">{t.adminLabel} · {new Date().getFullYear()}</p>
       </div>
     </div>
   )

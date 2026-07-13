@@ -1,0 +1,270 @@
+[
+  {
+    "id": "suqaar-sabaayad",
+    "name": { "EN": "Suqaar iyo Sabaayad", "FI": "Suqaar ja Sabaayad", "SO": "Suqaar iyo Sabaayad" },
+    "subtitle": {
+      "EN": "Sautéed beef · peppers · Somali flatbread",
+      "FI": "Paistettua naudanlihaa · paprikaa · somalialaista leipää",
+      "SO": "Hilib suqaar · basbaas · sabaayad Soomaaliyeed"
+    },
+    "description": {
+      "EN": "Crisp sabaayad, sautéed spiced beef.",
+      "FI": "Rapea sabaayad, mausteinen naudanliha.",
+      "SO": "Sabaayad qallafsan, hilib shiidan."
+    },
+    "longDescription": {
+      "EN": "Tender strips of beef suqaar wok-tossed with onion, capsicum and xawaash spice, folded into warm hand-rolled sabaayad — a Zahiiba house favourite.",
+      "FI": "Mureita naudanlihasuikaleita paistettuna sipulin, paprikan ja xawaash-mausteen kera, käärittynä lämpimään käsintehtyyn sabaayadiin — Zahiiban suosikki.",
+      "SO": "Hilib suqaar oo khafiif ah oo lagu shiilay basaal, basal iyo xawaash, oo lagu duudduubay sabaayad gacanta lagu sameeyay — kan ugu caansan Zahiiba."
+    },
+    "price": 11.0,
+    "category": "food",
+    "image": "/images/suqaar.png",
+    "isPopular": true,
+    "inStock": true,
+    "ingredients": {
+      "EN": ["Beef", "Xawaash", "Capsicum", "Onion", "Sabaayad"],
+      "FI": ["Naudanliha", "Xawaash", "Paprika", "Sipuli", "Sabaayad"],
+      "SO": ["Hilibka", "Xawaash", "Basbaas", "Basal", "Sabaayad"]
+    },
+    "allergens": [
+      { "label": { "EN": "Gluten (wheat)", "FI": "Gluteeni (vehnä)", "SO": "Gluten (qamadi)" }, "color": "wheat" },
+      { "label": { "EN": "Cooked in shared kitchen", "FI": "Jaettu keittiö", "SO": "Jiko la wadaago" }, "color": "shared" }
+    ],
+    "meta": {
+      "halal": true,
+      "spice": { "EN": "Medium spice", "FI": "Keskivahva", "SO": "Dhexdhexaad" },
+      "serves": { "EN": "Serves 1", "FI": "1 hengelle", "SO": "1 qof" }
+    },
+    "sortOrder": 0
+  },
+  {
+    "id": "hilib-ari",
+    "name": { "EN": "Hilib Ari", "FI": "Hilib Ari (Vuohenlihaa)", "SO": "Hilib Ari" },
+    "subtitle": {
+      "EN": "Grilled goat · rice · salad",
+      "FI": "Grillattua vuohenlihaa · riisiä · salaattia",
+      "SO": "Hilib ari duban · bariis · salad"
+    },
+    "description": {
+      "EN": "Tender grilled goat, aromatic rice.",
+      "FI": "Mureaa grillattua vuohea, aromaattista riisiä.",
+      "SO": "Hilib ari duban, bariis udgoon."
+    },
+    "longDescription": {
+      "EN": "Slow-grilled goat meat seasoned with cumin, turmeric and garlic, served over basmati rice with a fresh house salad and banana.",
+      "FI": "Hitaasti grillattua vuohenlihaa maustettuna kuminalla, kurkumalla ja valkosipulilla, tarjoillaan basmatiriisin, tuoreen salaatin ja banaanin kera.",
+      "SO": "Hilib ari oo si tartiib ah loo dubay, kuna daray cumin, dhagax iyo toon, waxaa la socda bariis, salad iyo moos."
+    },
+    "price": 14.5,
+    "category": "food",
+    "image": "/images/hilib_ari.png",
+    "isPopular": false,
+    "inStock": true,
+    "ingredients": {
+      "EN": ["Goat", "Rice", "Cumin", "Turmeric", "Salad"],
+      "FI": ["Vuohenliha", "Riisi", "Kumina", "Kurkuma", "Salaatti"],
+      "SO": ["Hilib ari", "Bariis", "Xawaash", "Qurac", "Salad"]
+    },
+    "allergens": [
+      { "label": { "EN": "Cooked in shared kitchen", "FI": "Jaettu keittiö", "SO": "Jiko la wadaago" }, "color": "shared" }
+    ],
+    "meta": {
+      "halal": true,
+      "spice": { "EN": "Mild spice", "FI": "Mieto", "SO": "Aad u yar" },
+      "serves": { "EN": "Serves 1", "FI": "1 hengelle", "SO": "1 qof" }
+    },
+    "sortOrder": 1
+  },
+  {
+    "id": "cambuulo",
+    "name": { "EN": "Cambuulo", "FI": "Cambuulo (Pavut)", "SO": "Cambuulo" },
+    "subtitle": {
+      "EN": "Adzuki beans · butter · sugar",
+      "FI": "Adzukipapuja · voita · sokeria",
+      "SO": "Digir · subag · sonkor"
+    },
+    "description": {
+      "EN": "Creamy beans, rich butter sauce.",
+      "FI": "Kermainen papumuhennos, täyteläinen voikastike.",
+      "SO": "Digir jilicsan, suugo subag leh."
+    },
+    "longDescription": {
+      "EN": "Traditional Somali adzuki beans slow-cooked until creamy, finished with melted butter and a touch of sugar. A comforting classic.",
+      "FI": "Perinteiset somalialaiset adzukipavut hitaasti keitettynä kermaisiksi, viimeisteltynä sulatetulla voilla ja ripauksella sokeria.",
+      "SO": "Digir Soomaaliyeed oo la kariyay ilaa ay jilicsato, oo lagu daray subag dhalaalay iyo sonkor. Waa cunto macaan."
+    },
+    "price": 8.0,
+    "category": "food",
+    "image": "/images/cambuulo.png",
+    "isPopular": false,
+    "inStock": true,
+    "ingredients": {
+      "EN": ["Adzuki beans", "Butter", "Sugar", "Sesame oil"],
+      "FI": ["Adzukipavut", "Voi", "Sokeri", "Seesamiöljy"],
+      "SO": ["Digirta", "Subag", "Sonkor", "Saliid macsar"]
+    },
+    "allergens": [
+      { "label": { "EN": "May contain dairy", "FI": "Saattaa sisältää maitoa", "SO": "Waxa laga yaabaa inuu leeyahay caano" }, "color": "dairy" }
+    ],
+    "meta": {
+      "halal": true,
+      "spice": { "EN": "No spice", "FI": "Ei mausteita", "SO": "Basbaas la'aan" },
+      "serves": { "EN": "Serves 1", "FI": "1 hengelle", "SO": "1 qof" }
+    },
+    "sortOrder": 2
+  },
+  {
+    "id": "bur-saliid",
+    "name": { "EN": "Bur Saliid", "FI": "Bur Saliid (Öljyleipä)", "SO": "Bur Saliid" },
+    "subtitle": {
+      "EN": "Somali flatbread · sesame · oil",
+      "FI": "Somalialainen litteä leipä · seesami · öljy",
+      "SO": "Rooti Soomaaliyeed · macsar · saliid"
+    },
+    "description": {
+      "EN": "Flaky flatbread brushed with sesame oil.",
+      "FI": "Hillomaininen litteä leipä, sivelty seesamiöljyllä.",
+      "SO": "Rooti qallafsan oo saliid macsar lagu shuban."
+    },
+    "longDescription": {
+      "EN": "Freshly baked Somali flatbread with layers of sesame oil and a golden, flaky crust — perfect as a side or on its own.",
+      "FI": "Tuoreena paistettu somalialainen litteä leipä seesamiöljykerroksilla ja kultaisella rapealla kuorella — täydellinen lisuke tai sellaisenaan.",
+      "SO": "Rooti Soomaaliyeed oo cusub oo dhuumah iyo saliid macsar leh — waa ku habboon tahay dhinac ahaan ama afsanaane."
+    },
+    "price": 3.0,
+    "category": "pastry",
+    "image": "/images/bur_saliid.png",
+    "isPopular": false,
+    "inStock": true,
+    "ingredients": {
+      "EN": ["Flour", "Sesame oil", "Salt", "Water"],
+      "FI": ["Jauho", "Seesamiöljy", "Suola", "Vesi"],
+      "SO": ["Buri", "Saliid macsar", "Cusbo", "Biyo"]
+    },
+    "allergens": [
+      { "label": { "EN": "Gluten (wheat)", "FI": "Gluteeni (vehnä)", "SO": "Gluten (qamadi)" }, "color": "wheat" }
+    ],
+    "meta": {
+      "halal": true,
+      "spice": { "EN": "No spice", "FI": "Ei mausteita", "SO": "Basbaas la'aan" },
+      "serves": { "EN": "Serves 1", "FI": "1 hengelle", "SO": "1 qof" }
+    },
+    "sortOrder": 0
+  },
+  {
+    "id": "sambusa",
+    "name": { "EN": "Sambusa", "FI": "Sambusa", "SO": "Sambuus" },
+    "subtitle": {
+      "EN": "Crisp pastry · spiced beef · 2 pcs",
+      "FI": "Rapea leivonnainen · mausteinen nauta · 2 kpl",
+      "SO": "Sambuus qallafsan · hilib basbaas leh · 2 xabbo"
+    },
+    "description": {
+      "EN": "Crisp pastry, spiced beef filling. 2 pcs.",
+      "FI": "Rapea leivonnainen, mausteinen naudanlihatäyte. 2 kpl.",
+      "SO": "Sambuus qallafsan, hilib shiidan. 2 xabbo."
+    },
+    "longDescription": {
+      "EN": "Hand-folded crispy pastry triangles stuffed with a fragrant mixture of spiced ground beef, onions and fresh herbs. Served golden and piping hot.",
+      "FI": "Käsin taitellut rapeat kolmiot, täytteenä mausteista jauhelihaa, sipulia ja tuoreita yrttejä. Tarjoillaan kullanruskeina ja kuumina.",
+      "SO": "Sambuus saddex-geesood ah oo gacanta lagu sameeyay, dhexda laga buuxiyay hilib shiidan, basal iyo geedo yaryar. Waxaa la bixiyaa isagoo kulul."
+    },
+    "price": 4.0,
+    "category": "pastry",
+    "image": "/images/sambusa.png",
+    "isPopular": true,
+    "inStock": true,
+    "ingredients": {
+      "EN": ["Beef", "Onion", "Flour", "Xawaash"],
+      "FI": ["Naudanliha", "Sipuli", "Jauho", "Xawaash"],
+      "SO": ["Hilib", "Basal", "Buri", "Xawaash"]
+    },
+    "allergens": [
+      { "label": { "EN": "Gluten (wheat)", "FI": "Gluteeni (vehnä)", "SO": "Gluten (qamadi)" }, "color": "wheat" }
+    ],
+    "meta": {
+      "halal": true,
+      "spice": { "EN": "Medium spice", "FI": "Keskivahva", "SO": "Dhexdhexaad" },
+      "serves": { "EN": "Serves 1", "FI": "1 hengelle", "SO": "1 qof" }
+    },
+    "sortOrder": 1
+  },
+  {
+    "id": "malawah",
+    "name": { "EN": "Malawah", "FI": "Malawah", "SO": "Malaawah" },
+    "subtitle": {
+      "EN": "Somali pancake · honey · cardamom",
+      "FI": "Somalialainen pannukakku · hunaja · kardemumma",
+      "SO": "Malawah Soomaaliyeed · malab · hayl"
+    },
+    "description": {
+      "EN": "Thin, sweet Somali crepe with honey.",
+      "FI": "Ohut, makea somalialainen ohukkaat hunajalla.",
+      "SO": "Malaawah khafiif ah oo macaan, malab leh."
+    },
+    "longDescription": {
+      "EN": "A thin, lacy Somali pancake made from fermented dough, served warm with honey, cardamom butter or sugar — a beloved breakfast and dessert.",
+      "FI": "Ohut somalialainen ohukkaat happamasta taikinasta, tarjoillaan lämpimänä hunajan, kardemumma-voin tai sokerin kera — suosittu aamiainen ja jälkiruoka.",
+      "SO": "Malaawah khafiif ah oo Soomaaliyeed, waxaa laga sameeyaa oo lagu siiyo malab, subag hayl iyo sonkor — waa cunto aad loogu jecel yahay."
+    },
+    "price": 5.0,
+    "category": "desserts",
+    "image": "/images/malawah.png",
+    "isPopular": false,
+    "inStock": true,
+    "ingredients": {
+      "EN": ["Flour", "Egg", "Milk", "Honey", "Cardamom"],
+      "FI": ["Jauho", "Muna", "Maito", "Hunaja", "Kardemumma"],
+      "SO": ["Buri", "Ukun", "Caano", "Malab", "Hayl"]
+    },
+    "allergens": [
+      { "label": { "EN": "Gluten (wheat)", "FI": "Gluteeni (vehnä)", "SO": "Gluten (qamadi)" }, "color": "wheat" },
+      { "label": { "EN": "May contain dairy", "FI": "Saattaa sisältää maitoa", "SO": "Waxa laga yaabaa inuu leeyahay caano" }, "color": "dairy" }
+    ],
+    "meta": {
+      "halal": true,
+      "spice": { "EN": "No spice", "FI": "Ei mausteita", "SO": "Basbaas la'aan" },
+      "serves": { "EN": "Serves 1", "FI": "1 hengelle", "SO": "1 qof" }
+    },
+    "sortOrder": 0
+  },
+  {
+    "id": "shaah-cadays",
+    "name": { "EN": "Shaah Cadays", "FI": "Shaah Cadays (Maitotee)", "SO": "Shaah Cadays" },
+    "subtitle": {
+      "EN": "Somali spiced tea · cardamom · milk",
+      "FI": "Somalialainen maustetee · kardemumma · maito",
+      "SO": "Shaah Soomaaliyeed · hayl · caano"
+    },
+    "description": {
+      "EN": "Spiced Somali milk tea with cardamom.",
+      "FI": "Mausteinen somalialainen maitotee kardemummalla.",
+      "SO": "Shaah caano leh iyo hayl."
+    },
+    "longDescription": {
+      "EN": "Rich black tea simmered with whole cardamom, cinnamon and cloves, finished with steamed milk and sugar. The soul of Somali hospitality.",
+      "FI": "Täyteläinen musta tee, haudutettu kardemummalla, kanelilla ja neilikalla. Viimeistelty höyrytetyllä maidolla ja sokerilla.",
+      "SO": "Shaah madow oo lagu kariyay hayl, qorfe iyo dhegayare, laguna daray caano iyo sonkor. Waa sooryada Soomaalida."
+    },
+    "price": 3.5,
+    "category": "warm-drinks",
+    "image": "/images/shaah.png",
+    "isPopular": true,
+    "inStock": true,
+    "ingredients": {
+      "EN": ["Black tea", "Cardamom", "Cinnamon", "Milk", "Sugar"],
+      "FI": ["Musta tee", "Kardemumma", "Kaneli", "Maito", "Sokeri"],
+      "SO": ["Shaah madow", "Hayl", "Qorfe", "Caano", "Sonkor"]
+    },
+    "allergens": [
+      { "label": { "EN": "May contain dairy", "FI": "Saattaa sisältää maitoa", "SO": "Caano" }, "color": "dairy" }
+    ],
+    "meta": {
+      "halal": true,
+      "spice": { "EN": "No spice", "FI": "Ei mausteita", "SO": "Basbaas la'aan" },
+      "serves": { "EN": "Serves 1", "FI": "1 hengelle", "SO": "1 qof" }
+    },
+    "sortOrder": 0
+  }
+]

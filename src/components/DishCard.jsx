@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { UI, getL10n } from '../data/i18n'
+import { formatPrice } from '../lib/format'
 import { Badge } from './ui/badge'
 
 export default function DishCard({ dish, onOpen, lang }) {
@@ -15,7 +16,7 @@ export default function DishCard({ dish, onOpen, lang }) {
       transition={{ duration: 0.22, ease: 'easeOut' }}
       role="button"
       tabIndex={0}
-      aria-label={`${getL10n(dish.name, lang)}, $${dish.price.toFixed(2)}`}
+      aria-label={`${getL10n(dish.name, lang)}, ${formatPrice(dish.price)}`}
       onClick={activate}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
@@ -47,7 +48,7 @@ export default function DishCard({ dish, onOpen, lang }) {
         </p>
         <div className="mt-2 flex items-center justify-between gap-2">
           <span className="font-display text-[15px] font-bold text-brand-text-dark md:text-base">
-            ${dish.price.toFixed(2)}
+            {formatPrice(dish.price)}
           </span>
           {dish.isPopular && (
             <Badge variant="popular">{UI.popular[lang]}</Badge>

@@ -11,6 +11,7 @@ import { Switch } from '../ui/switch'
 import { Badge } from '../ui/badge'
 import { createDish, updateDish, uploadImage } from '../../hooks/useAdmin'
 import { categories } from '../../data/i18n'
+import { useAdminLang } from '../../lib/adminLang'
 import { Upload, X, Plus } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -82,71 +83,71 @@ function dishToForm(dish) {
 }
 
 // ── Language-specific fields component ───────────────────────────────────────
-function LangFields({ lang, form, setField }) {
+function LangFields({ lang, form, setField, t }) {
   const spiceIdx  = SPICE_OPTIONS.EN.indexOf(form.meta.spice.EN)
   const servesIdx = SERVES_OPTIONS.EN.indexOf(form.meta.serves.EN)
 
   return (
     <div className="space-y-4">
       <div>
-        <Label htmlFor={`name-${lang}`}>Name *</Label>
+        <Label htmlFor={`name-${lang}`}>{t.fName} *</Label>
         <Input
           id={`name-${lang}`}
           className="mt-1"
           value={form.name[lang]}
           onChange={e => setField('name', lang, e.target.value)}
-          placeholder={`Dish name in ${lang}`}
+          placeholder={t.ph.name(lang)}
           required
         />
       </div>
       <div>
-        <Label htmlFor={`subtitle-${lang}`}>Subtitle *</Label>
+        <Label htmlFor={`subtitle-${lang}`}>{t.fSubtitle} *</Label>
         <Input
           id={`subtitle-${lang}`}
           className="mt-1"
           value={form.subtitle[lang]}
           onChange={e => setField('subtitle', lang, e.target.value)}
-          placeholder={`Short tagline in ${lang}`}
+          placeholder={t.ph.subtitle(lang)}
           required
         />
       </div>
       <div>
-        <Label htmlFor={`desc-${lang}`}>Short description * <span className="text-xs font-normal text-brand-text-muted">(shown on card)</span></Label>
+        <Label htmlFor={`desc-${lang}`}>{t.fShortDesc} * <span className="text-xs font-normal text-brand-text-muted">{t.fShortDescHint}</span></Label>
         <Input
           id={`desc-${lang}`}
           className="mt-1"
           value={form.description[lang]}
           onChange={e => setField('description', lang, e.target.value)}
-          placeholder={`1–2 sentence summary in ${lang}`}
+          placeholder={t.ph.shortDesc(lang)}
           required
         />
       </div>
       <div>
-        <Label htmlFor={`long-${lang}`}>Long description * <span className="text-xs font-normal text-brand-text-muted">(shown in detail view)</span></Label>
+        <Label htmlFor={`long-${lang}`}>{t.fLongDesc} * <span className="text-xs font-normal text-brand-text-muted">{t.fLongDescHint}</span></Label>
         <Textarea
           id={`long-${lang}`}
           className="mt-1"
           rows={3}
           value={form.longDescription[lang]}
           onChange={e => setField('longDescription', lang, e.target.value)}
-          placeholder={`Full description in ${lang}`}
+          placeholder={t.ph.longDesc(lang)}
           required
         />
       </div>
       <div>
-        <Label htmlFor={`ing-${lang}`}>Ingredients * <span className="text-xs font-normal text-brand-text-muted">(comma-separated)</span></Label>
+        <Label htmlFor={`ing-${lang}`}>{t.fIngredients} * <span className="text-xs font-normal text-brand-text-muted">{t.fIngredientsHint}</span></Label>
         <Input
           id={`ing-${lang}`}
           className="mt-1"
           value={form.ingredients[lang]}
           onChange={e => setField('ingredients', lang, e.target.value)}
-          placeholder={`e.g. Beef, Onion, Spices`}
+          placeholder={t.ph.ingredients(lang)}
           required
         />
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <Label htmlFor={`spice-${lang}`}>Spice level *</Label>
+          <Label htmlFor={`spice-${lang}`}>{t.fSpice} *</Label>
           <select
             id={`spice-${lang}`}
             className="mt-1 h-10 w-full rounded-xl border border-brand-border bg-white px-3 text-sm text-brand-text-dark focus:outline-none focus:ring-2 focus:ring-brand-gold"
@@ -162,7 +163,7 @@ function LangFields({ lang, form, setField }) {
           </select>
         </div>
         <div>
-          <Label htmlFor={`serves-${lang}`}>Serves *</Label>
+          <Label htmlFor={`serves-${lang}`}>{t.fServes} *</Label>
           <select
             id={`serves-${lang}`}
             className="mt-1 h-10 w-full rounded-xl border border-brand-border bg-white px-3 text-sm text-brand-text-dark focus:outline-none focus:ring-2 focus:ring-brand-gold"
@@ -184,6 +185,7 @@ function LangFields({ lang, form, setField }) {
 
 // ── Main form ─────────────────────────────────────────────────────────────────
 export default function DishForm({ dish, open, onClose, onSaved }) {
+  const { t, lang: adminLang } = useAdminLang()
   const isEdit = !!dish
   const [form, setForm]       = useState(() => dish ? dishToForm(dish) : empty())
   const [saving, setSaving]   = useState(false)
@@ -229,7 +231,7 @@ export default function DishForm({ dish, open, onClose, onSaved }) {
     try {
       const { url } = await uploadImage(file)
       setFlat('image', url)
-      toast.success('Image uploaded')
+      toast.success(t.imageUploaded)
     } catch (err) {
       toast.error(err.message)
     } finally {
@@ -266,7 +268,7 @@ export default function DishForm({ dish, open, onClose, onSaved }) {
       const saved = isEdit
         ? await updateDish(dish.id, payload)
         : await createDish(payload)
-      toast.success(isEdit ? 'Dish updated!' : 'Dish added to menu!')
+      toast.success(isEdit ? t.dishUpdated : t.dishAdded)
       onSaved(saved)
       onClose()
     } catch (err) {
@@ -279,28 +281,28 @@ export default function DishForm({ dish, open, onClose, onSaved }) {
   return (
     <Dialog open={open} onOpenChange={v => { if (!v) onClose() }}>
       <DialogContent className="max-h-[94dvh] w-[calc(100%-2rem)] max-w-[600px] overflow-y-auto p-0">
-        <DialogTitle className="sr-only">{isEdit ? 'Edit dish' : 'Add new dish'}</DialogTitle>
-        <DialogDescription className="sr-only">Fill in all three languages: English, Finnish, and Somali</DialogDescription>
+        <DialogTitle className="sr-only">{isEdit ? t.edit : t.addNewDish}</DialogTitle>
+        <DialogDescription className="sr-only">{t.allFieldsRequired}</DialogDescription>
 
         {/* Sticky header */}
         <div className="sticky top-0 z-10 border-b border-brand-border bg-brand-card px-5 py-4 md:px-6">
           <h2 className="font-display text-xl font-bold text-brand-dark">
-            {isEdit ? `Edit — ${dish.name.EN}` : 'Add new dish'}
+            {isEdit ? `${t.editPrefix} ${dish.name[adminLang] || dish.name.EN}` : t.addNewDish}
           </h2>
-          <p className="mt-0.5 text-xs text-brand-text-muted">All fields in all three languages are required</p>
+          <p className="mt-0.5 text-xs text-brand-text-muted">{t.allFieldsRequired}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="px-5 pb-8 pt-5 md:px-6">
           {/* Language tabs */}
           <Tabs defaultValue="EN">
             <TabsList className="mb-2">
-              <TabsTrigger value="EN">🇬🇧 English</TabsTrigger>
-              <TabsTrigger value="FI">🇫🇮 Finnish</TabsTrigger>
-              <TabsTrigger value="SO">🇸🇴 Somali</TabsTrigger>
+              <TabsTrigger value="EN">🇬🇧 {t.tabEnglish}</TabsTrigger>
+              <TabsTrigger value="FI">🇫🇮 {t.tabFinnish}</TabsTrigger>
+              <TabsTrigger value="SO">🇸🇴 {t.tabSomali}</TabsTrigger>
             </TabsList>
             {['EN', 'FI', 'SO'].map(lang => (
               <TabsContent key={lang} value={lang}>
-                <LangFields lang={lang} form={form} setField={setField} />
+                <LangFields lang={lang} form={form} setField={setField} t={t} />
               </TabsContent>
             ))}
           </Tabs>
@@ -308,14 +310,14 @@ export default function DishForm({ dish, open, onClose, onSaved }) {
           {/* Common fields divider */}
           <div className="my-6 flex items-center gap-3">
             <div className="h-px flex-1 bg-brand-border" />
-            <span className="text-xs font-bold uppercase tracking-widest text-brand-text-muted">Common fields</span>
+            <span className="text-xs font-bold uppercase tracking-widest text-brand-text-muted">{t.commonFields}</span>
             <div className="h-px flex-1 bg-brand-border" />
           </div>
 
           {/* Price + Category */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="price">Price (€) *</Label>
+              <Label htmlFor="price">{t.fPrice} *</Label>
               <Input
                 id="price"
                 type="number"
@@ -329,7 +331,7 @@ export default function DishForm({ dish, open, onClose, onSaved }) {
               />
             </div>
             <div>
-              <Label htmlFor="category">Category *</Label>
+              <Label htmlFor="category">{t.fCategory} *</Label>
               <select
                 id="category"
                 className="mt-1 h-10 w-full rounded-xl border border-brand-border bg-white px-3 text-sm text-brand-text-dark focus:outline-none focus:ring-2 focus:ring-brand-gold"
@@ -337,7 +339,7 @@ export default function DishForm({ dish, open, onClose, onSaved }) {
                 onChange={e => setFlat('category', e.target.value)}
               >
                 {categories.map(c => (
-                  <option key={c.id} value={c.id}>{c.label.EN}</option>
+                  <option key={c.id} value={c.id}>{c.label[adminLang]}</option>
                 ))}
               </select>
             </div>
@@ -345,12 +347,12 @@ export default function DishForm({ dish, open, onClose, onSaved }) {
 
           {/* Image */}
           <div className="mt-4">
-            <Label>Dish image</Label>
+            <Label>{t.fImage}</Label>
             <div className="mt-1 flex gap-2">
               <Input
                 value={form.image}
                 onChange={e => setFlat('image', e.target.value)}
-                placeholder="https://… or upload →"
+                placeholder={t.imagePlaceholder}
                 className="flex-1"
               />
               <Button
@@ -359,7 +361,7 @@ export default function DishForm({ dish, open, onClose, onSaved }) {
                 size="icon"
                 onClick={() => fileRef.current?.click()}
                 disabled={uploading}
-                title="Upload image file"
+                title={t.uploadTitle}
               >
                 {uploading ? '…' : <Upload className="h-4 w-4" />}
               </Button>
@@ -377,7 +379,7 @@ export default function DishForm({ dish, open, onClose, onSaved }) {
 
           {/* Allergens */}
           <div className="mt-4">
-            <Label>Allergens</Label>
+            <Label>{t.fAllergens}</Label>
             <div className="mt-2 flex flex-wrap gap-2">
               {ALLERGEN_PRESETS.map(p => {
                 const active = form.allergens.some(a => a.label.EN === p.label.EN)
@@ -388,7 +390,7 @@ export default function DishForm({ dish, open, onClose, onSaved }) {
                     onClick={() => toggleAllergen(p)}
                     className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${active ? 'border-tag-text-red/40 bg-tag-bg-red text-tag-text-red' : 'border-brand-border bg-white text-brand-text-muted hover:border-brand-gold/40'}`}
                   >
-                    {active ? '✓ ' : ''}{p.label.EN}
+                    {active ? '✓ ' : ''}{p.label[adminLang]}
                   </button>
                 )
               })}
@@ -398,8 +400,8 @@ export default function DishForm({ dish, open, onClose, onSaved }) {
           {/* Toggles */}
           <div className="mt-4 space-y-3">
             {[
-              { key: 'inStock',   label: 'In stock',      sub: 'Visible to customers when enabled' },
-              { key: 'isPopular', label: 'Popular ⭐',     sub: 'Shows a star badge on the card' },
+              { key: 'inStock',   label: t.tInStock,  sub: t.tInStockSub },
+              { key: 'isPopular', label: t.tPopular,  sub: t.tPopularSub },
             ].map(({ key, label, sub }) => (
               <div key={key} className="flex items-center justify-between rounded-xl bg-brand-bg px-4 py-3">
                 <div>
@@ -411,8 +413,8 @@ export default function DishForm({ dish, open, onClose, onSaved }) {
             ))}
             <div className="flex items-center justify-between rounded-xl bg-brand-bg px-4 py-3">
               <div>
-                <p className="text-sm font-semibold text-brand-text-dark">Halal ✅</p>
-                <p className="text-xs text-brand-text-muted">Shows halal badge in detail view</p>
+                <p className="text-sm font-semibold text-brand-text-dark">{t.tHalal}</p>
+                <p className="text-xs text-brand-text-muted">{t.tHalalSub}</p>
               </div>
               <Switch
                 checked={form.meta.halal}
@@ -424,10 +426,10 @@ export default function DishForm({ dish, open, onClose, onSaved }) {
           {/* Submit */}
           <div className="mt-8 flex gap-3">
             <Button type="button" variant="outline" className="flex-1" onClick={onClose}>
-              Cancel
+              {t.cancel}
             </Button>
             <Button type="submit" variant="default" className="flex-1" disabled={saving}>
-              {saving ? 'Saving…' : isEdit ? 'Save changes' : 'Add to menu'}
+              {saving ? t.saving : isEdit ? t.saveChanges : t.addToMenu}
             </Button>
           </div>
         </form>

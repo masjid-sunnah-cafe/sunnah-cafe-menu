@@ -1,12 +1,15 @@
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { MotionConfig, AnimatePresence } from 'framer-motion'
-import { categories, UI, getDishesText } from '../data/i18n'
+import { categories, UI, getDishesText, getL10n, getL10nArray } from '../data/i18n'
 import { useDishes } from '../hooks/useDishes'
 import Header from '../components/Header'
 import PatternBorder from '../components/PatternBorder'
-import CategoryTabs from '../components/CategoryTabs'
+import StickyBar from '../components/StickyBar'
 import DishGrid from '../components/DishGrid'
 import DishDetailSheet from '../components/DishDetailSheet'
+
+const LANG_KEY = 'zahiiba-lang'
+const ALL_CATEGORY = { id: 'all', label: { EN: 'All', FI: 'Kaikki', SO: 'Dhammaan' } }
 
 // ── Skeleton loader ───────────────────────────────────────────────────────────
 function SkeletonCard() {
@@ -25,21 +28,51 @@ function SkeletonCard() {
 }
 
 export default function MenuPage() {
-  const [lang, setLang]                   = useState('EN')
-  const [activeCategory, setActiveCategory] = useState(categories[0].id)
+  const [lang, setLang] = useState(() => {
+    const saved = localStorage.getItem(LANG_KEY)
+    return saved === 'EN' || saved === 'FI' || saved === 'SO' ? saved : 'EN'
+  })
+  const [activeCategory, setActiveCategory] = useState('all')
+  const [query, setQuery]                   = useState('')
   const [openItemId, setOpenItemId]         = useState(null)
   const openerRef = useRef(null)
 
+  useEffect(() => {
+    localStorage.setItem(LANG_KEY, lang)
+    document.documentElement.lang = lang.toLowerCase()
+  }, [lang])
+
   const { dishes, loading, error } = useDishes()
 
-  const filteredDishes = useMemo(
-    () => dishes.filter((d) => d.category === activeCategory),
-    [dishes, activeCategory],
-  )
+  // "All" first, then the real categories.
+  const tabCategories = useMemo(() => [ALL_CATEGORY, ...categories], [])
+
+  const searching = query.trim().length > 0
+
+  const filteredDishes = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    return dishes.filter((d) => {
+      // When searching, look across every category; otherwise respect the tab.
+      if (!q && activeCategory !== 'all' && d.category !== activeCategory) return false
+      if (!q) return true
+      const haystack = [
+        getL10n(d.name, lang),
+        getL10n(d.subtitle, lang),
+        getL10n(d.description, lang),
+        ...getL10nArray(d.ingredients, lang),
+      ]
+        .join(' ')
+        .toLowerCase()
+      return haystack.includes(q)
+    })
+  }, [dishes, activeCategory, query, lang])
 
   const activeCategoryLabel = useMemo(
-    () => categories.find((c) => c.id === activeCategory)?.label[lang] || '',
-    [activeCategory, lang],
+    () =>
+      searching
+        ? UI.searchResults[lang]
+        : tabCategories.find((c) => c.id === activeCategory)?.label[lang] || '',
+    [searching, tabCategories, activeCategory, lang],
   )
 
   const openItem = dishes.find((d) => d.id === openItemId) ?? null
@@ -70,11 +103,16 @@ export default function MenuPage() {
         <Header lang={lang} onLangChange={setLang} />
         <PatternBorder />
 
-        <CategoryTabs
-          categories={categories}
-          activeCategory={activeCategory}
-          onSelect={setActiveCategory}
+        <StickyBar
           lang={lang}
+          query={query}
+          onQuery={setQuery}
+          categories={tabCategories}
+          activeCategory={activeCategory}
+          onCategory={(id) => {
+            setActiveCategory(id)
+            setQuery('')
+          }}
         />
 
         {/* Loading state */}
@@ -102,7 +140,7 @@ export default function MenuPage() {
             categoryLabel={activeCategoryLabel}
             onOpen={handleOpen}
             lang={lang}
-            getDishesText={getDishesText}
+            noResults={searching}
           />
         )}
 
