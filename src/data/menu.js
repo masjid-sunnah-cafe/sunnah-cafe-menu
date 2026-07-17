@@ -91,7 +91,7 @@ export const dishes = [
     },
     allergens: [
       { label: { EN: 'Gluten (wheat)', FI: 'Gluteeni (vehnä)', SO: 'Gluten (qamadi)' }, color: 'wheat' },
-      { label: { EN: 'Cooked in shared kitchen', FI: 'Jaettu keittiö', SO: 'Jiko la wadaago' }, color: 'shared' },
+      { label: { EN: 'Lactose-free', FI: 'Laktoositon', SO: 'Aan lahayn laktoos' }, color: 'dairy' },
     ],
     meta: {
       halal: true,
@@ -127,7 +127,7 @@ export const dishes = [
       SO: ['Hilib ari', 'Bariis', 'Xawaash', 'Qurac', 'Salad']
     },
     allergens: [
-      { label: { EN: 'Cooked in shared kitchen', FI: 'Jaettu keittiö', SO: 'Jiko la wadaago' }, color: 'shared' },
+      { label: { EN: 'Lactose-free', FI: 'Laktoositon', SO: 'Aan lahayn laktoos' }, color: 'dairy' },
     ],
     meta: {
       halal: true,
@@ -167,7 +167,7 @@ export const dishes = [
     ],
     meta: {
       halal: true,
-      spice: { EN: 'No spice', FI: 'Ei mausteita', SO: 'Basbaas la\'aan' },
+      spice: { EN: 'Mild spice', FI: 'Mieto', SO: 'Aad u yar' },
       serves: { EN: 'Serves 1', FI: '1 hengelle', SO: '1 qof' }
     },
   },
@@ -243,7 +243,7 @@ export const dishes = [
     ],
     meta: {
       halal: true,
-      spice: { EN: 'No spice', FI: 'Ei mausteita', SO: 'Basbaas la\'aan' },
+      spice: { EN: 'Mild spice', FI: 'Mieto', SO: 'Aad u yar' },
       serves: { EN: 'Serves 1', FI: '1 hengelle', SO: '1 qof' }
     },
   },

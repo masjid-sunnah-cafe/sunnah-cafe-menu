@@ -31,6 +31,24 @@ create table if not exists public.dishes (
 create index if not exists dishes_category_idx on public.dishes (category);
 create index if not exists dishes_stock_idx on public.dishes (in_stock);
 
+-- Categories are managed by the restaurant admin and drive customer tabs.
+create table if not exists public.categories (
+  id          text primary key,
+  label       jsonb not null,                  -- { EN, FI, SO }
+  sort_order  int not null default 0,
+  created_at  timestamptz not null default now()
+);
+
+create index if not exists categories_sort_order_idx on public.categories (sort_order);
+
+insert into public.categories (id, label, sort_order) values
+  ('food',        '{"EN":"Food","FI":"Ruoka","SO":"Cunto"}', 0),
+  ('pastry',      '{"EN":"Pastry","FI":"Leivonnaiset","SO":"Rooti"}', 1),
+  ('desserts',    '{"EN":"Desserts","FI":"Jälkiruoat","SO":"Macmacaan"}', 2),
+  ('warm-drinks', '{"EN":"Warm Drinks","FI":"Kuumat juomat","SO":"Cabitaan kulul"}', 3),
+  ('cold-drinks', '{"EN":"Cold Drinks","FI":"Kylmät juomat","SO":"Cabitaano qabow"}', 4)
+on conflict (id) do nothing;
+
 -- ---------------------------------------------------------------------------
 -- Row Level Security
 -- ---------------------------------------------------------------------------
@@ -45,6 +63,18 @@ create policy "public read dishes" on public.dishes
 -- Only authenticated users (the admin) may write.
 drop policy if exists "authenticated manage dishes" on public.dishes;
 create policy "authenticated manage dishes" on public.dishes
+  for all
+  using (auth.uid() is not null)
+  with check (auth.uid() is not null);
+
+alter table public.categories enable row level security;
+
+drop policy if exists "public read categories" on public.categories;
+create policy "public read categories" on public.categories
+  for select using (true);
+
+drop policy if exists "authenticated manage categories" on public.categories;
+create policy "authenticated manage categories" on public.categories
   for all
   using (auth.uid() is not null)
   with check (auth.uid() is not null);

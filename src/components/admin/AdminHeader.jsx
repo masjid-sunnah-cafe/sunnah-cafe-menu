@@ -1,4 +1,3 @@
-import zahiibaLogo from '../../assets/images/Zahiiba.png'
 import { Button } from '../ui/button'
 import { LogOut, ChefHat } from 'lucide-react'
 import { useAdminLang, AdminLangSwitcher } from '../../lib/adminLang'
@@ -9,8 +8,8 @@ export default function AdminHeader({ dishCount, onLogout }) {
     <header className="sticky top-0 z-30 border-b border-brand-border/60 bg-brand-dark px-5 py-3 shadow-lg md:px-8">
       <div className="mx-auto flex max-w-7xl items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full border border-brand-gold/40 overflow-hidden">
-            <img src={zahiibaLogo} alt="Zahiiba" className="h-full w-full object-cover" />
+          <div className="flex h-9 w-9 items-center justify-center rounded-full border border-brand-gold/40 font-display text-xs font-bold text-brand-gold">
+            SC
           </div>
           <div>
             <div className="flex items-center gap-2">

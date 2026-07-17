@@ -1,4 +1,3 @@
-import zahiibaLogo from '../assets/images/Zahiiba.png'
 import { LANGS, UI } from '../data/i18n'
 import { Button } from './ui/button'
 
@@ -19,12 +18,12 @@ export default function Header({ lang, onLangChange }) {
       <div className="relative z-10 mx-auto flex max-w-5xl items-center justify-between">
         {/* Logo & info */}
         <div className="flex items-center gap-4">
-          <div className="h-14 w-14 flex-none overflow-hidden rounded-full border-[2.5px] border-brand-gold bg-brand-dark shadow-lg shadow-black/30 md:h-16 md:w-16">
-            <img src={zahiibaLogo} alt="Zahiiba" className="h-full w-full object-cover" />
+          <div className="flex h-14 w-14 flex-none items-center justify-center rounded-full border-[2.5px] border-brand-gold bg-brand-dark font-display text-lg font-bold text-brand-gold shadow-lg shadow-black/30 md:h-16 md:w-16">
+            SC
           </div>
           <div>
             <h1 className="font-display text-[26px] font-bold leading-tight text-white md:text-3xl">
-              Zahiiba
+              Sunnah Cafe
             </h1>
             <p className="text-[12px] leading-snug text-brand-gold md:text-[13px]">
               {UI.subtitle[lang].split(' · ')[0]} ·

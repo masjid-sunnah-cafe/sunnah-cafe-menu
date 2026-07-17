@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import zahiibaLogo from '../../assets/images/Zahiiba.png'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { Label } from '../ui/label'
@@ -49,11 +48,11 @@ export default function LoginForm({ onLogin }) {
           <div className="px-8 py-8">
             {/* Logo */}
             <div className="flex flex-col items-center gap-3 mb-8">
-              <div className="h-16 w-16 overflow-hidden rounded-full border-2 border-brand-gold shadow-lg">
-                <img src={zahiibaLogo} alt="Zahiiba" className="h-full w-full object-cover" />
+              <div className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-brand-gold bg-brand-dark font-display text-lg font-bold text-brand-gold shadow-lg">
+                SC
               </div>
               <div className="text-center">
-                <h1 className="font-display text-2xl font-bold text-brand-dark">Zahiiba</h1>
+                <h1 className="font-display text-2xl font-bold text-brand-dark">Sunnah Cafe</h1>
                 <div className="mt-1 flex items-center justify-center gap-1.5 text-brand-text-muted">
                   <ChefHat className="h-3.5 w-3.5" />
                   <span className="text-xs font-medium uppercase tracking-widest">{t.dashboard}</span>

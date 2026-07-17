@@ -1,6 +1,9 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
+import { ShoppingBag } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { UI } from '../data/i18n'
+import { useCart } from '../hooks/useCart'
 import MobileNav from './MobileNav'
 
 function Hamburger({ open, onClick, label }) {
@@ -37,6 +40,8 @@ function Hamburger({ open, onClick, label }) {
 
 export default function StickyBar({ lang, query, onQuery, categories, activeCategory, onCategory }) {
   const [navOpen, setNavOpen] = useState(false)
+  const navigate = useNavigate()
+  const { itemCount } = useCart()
   const activeCat = categories.find((c) => c.id === activeCategory)
 
   return (
@@ -57,6 +62,19 @@ export default function StickyBar({ lang, query, onQuery, categories, activeCate
             enterKeyHint="search"
             className="w-full rounded-full border border-brand-gold/40 bg-brand-card px-5 py-3 font-body text-[16px] text-brand-text-dark placeholder-brand-text-muted/70 outline-none focus:border-brand-gold"
           />
+          <button
+            type="button"
+            onClick={() => navigate('/cart')}
+            aria-label={`${UI.cart[lang]} (${itemCount})`}
+            className="relative grid h-11 w-11 flex-none place-items-center rounded-full border border-brand-gold/50 bg-brand-card text-brand-text-dark"
+          >
+            <ShoppingBag size={20} aria-hidden="true" />
+            {itemCount > 0 && (
+              <span className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-brand-red px-1 text-[11px] font-bold text-white">
+                {itemCount > 99 ? '99+' : itemCount}
+              </span>
+            )}
+          </button>
         </div>
 
         {/* Current category hint on mobile */}

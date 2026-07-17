@@ -1,6 +1,6 @@
 import { supabase } from '../lib/supabase'
 import { RESTAURANT_SLUG } from '../config'
-import type { Dish, DishInput } from '../lib/types'
+import type { Category, Dish, DishInput } from '../lib/types'
 import * as repo from '../data/adminRepository'
 import { uploadImage as upload } from '../data/imageUpload'
 
@@ -53,6 +53,22 @@ export function updateDish(id: string, patch: Partial<DishInput>): Promise<Dish>
 
 export function deleteDish(id: string): Promise<void> {
   return repo.deleteDish(RESTAURANT_SLUG, id)
+}
+
+export function fetchAllCategories(): Promise<Category[]> {
+  return repo.getAllCategories(RESTAURANT_SLUG)
+}
+
+export function createCategory(label: Category['label']): Promise<Category> {
+  return repo.createCategory(RESTAURANT_SLUG, label)
+}
+
+export function updateCategory(id: string, label: Category['label']): Promise<Category> {
+  return repo.updateCategory(RESTAURANT_SLUG, id, label)
+}
+
+export function deleteCategory(id: string): Promise<void> {
+  return repo.deleteCategory(RESTAURANT_SLUG, id)
 }
 
 // ── Image upload ─────────────────────────────────────────────────────────────

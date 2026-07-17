@@ -1,5 +1,7 @@
-import zahiibaLogo from '../assets/images/Zahiiba.png'
-import { UI, getL10n, getL10nArray } from '../data/i18n'
+import { useEffect, useState } from 'react'
+import { Minus, Plus, ShoppingBag } from 'lucide-react'
+import { UI, getL10n } from '../data/i18n'
+import { useCart } from '../hooks/useCart'
 import { formatPrice } from '../lib/format'
 import {
   Dialog,
@@ -18,6 +20,18 @@ const ALLERGEN_VARIANT = {
 }
 
 export default function DishDetailSheet({ dish, onClose, lang }) {
+  const [quantity, setQuantity] = useState(1)
+  const { addItem } = useCart()
+
+  useEffect(() => {
+    setQuantity(1)
+  }, [dish?.id])
+
+  function handleAddToCart() {
+    addItem(dish.id, quantity)
+    onClose()
+  }
+
   return (
     <Dialog open={!!dish} onOpenChange={(open) => { if (!open) onClose() }}>
       <DialogContent className="max-h-[92dvh] overflow-y-auto p-0">
@@ -33,8 +47,8 @@ export default function DishDetailSheet({ dish, onClose, lang }) {
           <>
             {/* Brand header bar */}
             <div className="flex items-center gap-2 px-5 pb-3 pt-5 md:px-6 md:pt-6">
-              <img src={zahiibaLogo} alt="" className="h-8 w-8 rounded-full object-cover" />
-              <p className="font-display text-lg font-semibold italic text-brand-text-muted">Zahiiba</p>
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-dark font-display text-xs font-bold text-brand-gold">SC</span>
+              <p className="font-display text-lg font-semibold italic text-brand-text-muted">Sunnah Cafe</p>
             </div>
 
             {/* Hero image */}
@@ -45,8 +59,8 @@ export default function DishDetailSheet({ dish, onClose, lang }) {
                   alt={getL10n(dish.name, lang)}
                   className="aspect-[4/3] w-full object-cover"
                 />
-                <div className="absolute bottom-3 right-3 h-12 w-12 overflow-hidden rounded-full border-2 border-white/60 shadow-lg">
-                  <img src={zahiibaLogo} alt="" className="h-full w-full object-cover" />
+                <div className="absolute bottom-3 right-3 flex h-12 w-12 items-center justify-center rounded-full border-2 border-white/60 bg-brand-dark font-display text-sm font-bold text-brand-gold shadow-lg">
+                  SC
                 </div>
               </div>
             </div>
@@ -67,17 +81,6 @@ export default function DishDetailSheet({ dish, onClose, lang }) {
               <p className="mt-3 text-sm leading-[1.7] text-brand-text-dark md:text-[15px]">
                 {getL10n(dish.longDescription, lang)}
               </p>
-
-              {/* Ingredients */}
-              <Separator className="mt-6" />
-              <h3 className="mt-4 text-[13px] font-bold uppercase tracking-[0.18em] text-brand-text-muted">
-                {UI.ingredientsLabel[lang]}
-              </h3>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {getL10nArray(dish.ingredients, lang).map((ing) => (
-                  <Badge key={ing} variant="default">{ing}</Badge>
-                ))}
-              </div>
 
               {/* Allergens */}
               {dish.allergens.length > 0 && (
@@ -112,14 +115,35 @@ export default function DishDetailSheet({ dish, onClose, lang }) {
                 <Badge variant="meta">{getL10n(dish.meta.serves, lang)}</Badge>
               </div>
 
-              {/* Close CTA */}
+              <div className="mt-8 flex h-12 items-center justify-between rounded-xl border border-brand-border bg-brand-bg px-1">
+                <button
+                  type="button"
+                  onClick={() => setQuantity((value) => Math.max(1, value - 1))}
+                  aria-label={UI.decreaseQuantity[lang]}
+                  className="grid h-11 w-11 place-items-center rounded-lg"
+                >
+                  <Minus size={18} aria-hidden="true" />
+                </button>
+                <span className="font-display text-lg font-bold" aria-live="polite">{quantity}</span>
+                <button
+                  type="button"
+                  onClick={() => setQuantity((value) => Math.min(99, value + 1))}
+                  aria-label={UI.increaseQuantity[lang]}
+                  className="grid h-11 w-11 place-items-center rounded-lg"
+                >
+                  <Plus size={18} aria-hidden="true" />
+                </button>
+              </div>
+
               <Button
                 type="button"
-                onClick={onClose}
+                onClick={handleAddToCart}
+                disabled={!dish.inStock}
                 variant="default"
-                className="mt-8 w-full rounded-2xl py-3.5 text-sm tracking-wide md:py-4 md:text-base"
+                className="mt-3 h-12 w-full gap-2 rounded-xl text-sm tracking-wide md:text-base"
               >
-                {UI.backToMenu[lang]}
+                <ShoppingBag size={18} aria-hidden="true" />
+                {UI.addToCart[lang]} · {formatPrice(dish.price * quantity)}
               </Button>
             </div>
           </>

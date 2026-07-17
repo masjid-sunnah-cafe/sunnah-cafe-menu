@@ -35,6 +35,14 @@ const dishes = JSON.parse(
   readFileSync(join(__dirname, '..', 'src', 'data', 'dishes.json'), 'utf8'),
 )
 
+const categories = [
+  { id: 'food', label: { EN: 'Food', FI: 'Ruoka', SO: 'Cunto' }, sort_order: 0 },
+  { id: 'pastry', label: { EN: 'Pastry', FI: 'Leivonnaiset', SO: 'Rooti' }, sort_order: 1 },
+  { id: 'desserts', label: { EN: 'Desserts', FI: 'Jälkiruoat', SO: 'Macmacaan' }, sort_order: 2 },
+  { id: 'warm-drinks', label: { EN: 'Warm Drinks', FI: 'Kuumat juomat', SO: 'Cabitaan kulul' }, sort_order: 3 },
+  { id: 'cold-drinks', label: { EN: 'Cold Drinks', FI: 'Kylmät juomat', SO: 'Cabitaano qabow' }, sort_order: 4 },
+]
+
 const rows = dishes.map((d) => ({
   id: d.id,
   name: d.name,
@@ -52,6 +60,15 @@ const rows = dishes.map((d) => ({
   sort_order: d.sortOrder ?? 0,
 }))
 
+const { error: categoryError } = await supabase
+  .from('categories')
+  .upsert(categories, { onConflict: 'id', ignoreDuplicates: true })
+
+if (categoryError) {
+  console.error('✖ Category seed failed:', categoryError.message)
+  process.exit(1)
+}
+
 const { error } = await supabase.from('dishes').upsert(rows, { onConflict: 'id' })
 
 if (error) {
@@ -59,4 +76,4 @@ if (error) {
   process.exit(1)
 }
 
-console.log(`✔ Seeded ${rows.length} dishes into Supabase.`)
+console.log(`✔ Seeded ${categories.length} categories and ${rows.length} dishes into Supabase.`)

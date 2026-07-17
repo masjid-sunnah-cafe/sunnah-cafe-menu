@@ -1,14 +1,15 @@
 import { useState, useEffect, useCallback } from 'react'
-import { isLoggedIn, logout, fetchAllDishes } from '../hooks/useAdmin'
+import { isLoggedIn, logout, fetchAllCategories, fetchAllDishes } from '../hooks/useAdmin'
 import LoginForm from '../components/admin/LoginForm'
 import AdminHeader from '../components/admin/AdminHeader'
 import AdminDishCard from '../components/admin/AdminDishCard'
 import DishForm from '../components/admin/DishForm'
+import CategoryManager from '../components/admin/CategoryManager'
+import StaffOrderQueue from '../components/admin/StaffOrderQueue'
 import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
-import { Plus, Search, UtensilsCrossed, CheckCircle2, XCircle } from 'lucide-react'
+import { Plus, Search, Tags, UtensilsCrossed, CheckCircle2, XCircle, ListOrdered } from 'lucide-react'
 import { Toaster } from 'sonner'
-import { categories } from '../data/i18n'
 import { AdminLangProvider, useAdminLang } from '../lib/adminLang'
 
 // ── Stat card ─────────────────────────────────────────────────────────────────
@@ -31,18 +32,22 @@ function AdminPageInner() {
   const { t, lang } = useAdminLang()
   const [authed, setAuthed]         = useState(isLoggedIn())
   const [dishes, setDishes]         = useState([])
+  const [categories, setCategories] = useState([])
   const [loading, setLoading]       = useState(false)
   const [search, setSearch]         = useState('')
   const [filterCat, setFilterCat]   = useState('all')
   const [filterStock, setFilterStock] = useState('all') // 'all' | 'in' | 'out'
   const [formOpen, setFormOpen]     = useState(false)
   const [editDish, setEditDish]     = useState(null)
+  const [categoriesOpen, setCategoriesOpen] = useState(false)
+  const [view, setView] = useState('orders')
 
-  const loadDishes = useCallback(async () => {
+  const loadMenu = useCallback(async () => {
     setLoading(true)
     try {
-      const data = await fetchAllDishes()
-      setDishes(data)
+      const [dishData, categoryData] = await Promise.all([fetchAllDishes(), fetchAllCategories()])
+      setDishes(dishData)
+      setCategories(categoryData)
     } catch {
       // If token expired, force re-login
       setAuthed(false)
@@ -52,8 +57,8 @@ function AdminPageInner() {
   }, [])
 
   useEffect(() => {
-    if (authed) loadDishes()
-  }, [authed, loadDishes])
+    if (authed) loadMenu()
+  }, [authed, loadMenu])
 
   function handleLogin() {
     setAuthed(true)
@@ -63,6 +68,7 @@ function AdminPageInner() {
     logout()
     setAuthed(false)
     setDishes([])
+    setCategories([])
   }
 
   function handleUpdated(updated) {
@@ -81,6 +87,10 @@ function AdminPageInner() {
   }
 
   function openAdd() {
+    if (categories.length === 0) {
+      setCategoriesOpen(true)
+      return
+    }
     setEditDish(null)
     setFormOpen(true)
   }
@@ -88,6 +98,14 @@ function AdminPageInner() {
   function openEdit(dish) {
     setEditDish(dish)
     setFormOpen(true)
+  }
+
+  function handleCategoryChanged(category, wasUpdated, wasDeleted) {
+    setCategories((previous) => {
+      if (wasDeleted) return previous.filter((item) => item.id !== category.id)
+      if (wasUpdated) return previous.map((item) => item.id === category.id ? category : item)
+      return [...previous, category]
+    })
   }
 
   // ── Derived stats ─────────────────────────────────────────────────────────
@@ -128,6 +146,27 @@ function AdminPageInner() {
           <StatCard icon={XCircle}         label={t.outOfStock}  value={outStock}       color="bg-tag-bg-red text-tag-text-red" />
         </div>
 
+        <div className="mt-6 inline-flex rounded-lg border border-brand-border bg-white p-1">
+          <button
+            type="button"
+            onClick={() => setView('orders')}
+            className={`inline-flex h-10 items-center gap-2 rounded-md px-4 text-sm font-bold ${view === 'orders' ? 'bg-brand-dark text-white' : 'text-brand-text-muted'}`}
+          >
+            <ListOrdered className="h-4 w-4" /> Orders
+          </button>
+          <button
+            type="button"
+            onClick={() => setView('menu')}
+            className={`inline-flex h-10 items-center gap-2 rounded-md px-4 text-sm font-bold ${view === 'menu' ? 'bg-brand-dark text-white' : 'text-brand-text-muted'}`}
+          >
+            <UtensilsCrossed className="h-4 w-4" /> Menu
+          </button>
+        </div>
+
+        {view === 'orders' && <StaffOrderQueue />}
+
+        {view === 'menu' && <>
+
         {/* Toolbar */}
         <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-1 flex-wrap items-center gap-2">
@@ -164,10 +203,14 @@ function AdminPageInner() {
             </select>
           </div>
 
-          {/* Add button */}
-          <Button onClick={openAdd} variant="brand" className="gap-2 shrink-0">
-            <Plus className="h-4 w-4" /> {t.addNewDish}
-          </Button>
+          <div className="flex gap-2 shrink-0">
+            <Button onClick={() => setCategoriesOpen(true)} variant="outline" size="icon" title={t.manageCategories}>
+              <Tags className="h-4 w-4" />
+            </Button>
+            <Button onClick={openAdd} variant="brand" className="gap-2">
+              <Plus className="h-4 w-4" /> {t.addNewDish}
+            </Button>
+          </div>
         </div>
 
         {/* Loading */}
@@ -201,15 +244,24 @@ function AdminPageInner() {
             ))}
           </div>
         )}
+        </>}
       </div>
 
       {/* Add / Edit form */}
       <DishForm
         key={editDish?.id ?? 'new'}
         dish={editDish}
+        categories={categories}
         open={formOpen}
         onClose={() => { setFormOpen(false); setEditDish(null) }}
         onSaved={handleSaved}
+      />
+      <CategoryManager
+        categories={categories}
+        dishes={dishes}
+        open={categoriesOpen}
+        onClose={() => setCategoriesOpen(false)}
+        onChanged={handleCategoryChanged}
       />
     </div>
   )

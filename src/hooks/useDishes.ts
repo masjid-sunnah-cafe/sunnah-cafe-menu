@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { RESTAURANT_SLUG } from '../config'
-import type { Dish } from '../lib/types'
-import { getPublicDishes } from '../data/repository'
+import type { Category, Dish } from '../lib/types'
+import { getPublicCategories, getPublicDishes } from '../data/repository'
 
 /**
  * Customer menu data. Loads in-stock dishes from Supabase (or bundled seed data
@@ -9,13 +9,18 @@ import { getPublicDishes } from '../data/repository'
  */
 export function useDishes() {
   const [dishes, setDishes] = useState<Dish[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   const load = useCallback(async () => {
     try {
-      const data = await getPublicDishes(RESTAURANT_SLUG)
-      setDishes(data)
+      const [dishData, categoryData] = await Promise.all([
+        getPublicDishes(RESTAURANT_SLUG),
+        getPublicCategories(RESTAURANT_SLUG),
+      ])
+      setDishes(dishData)
+      setCategories(categoryData)
       setError(null)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to load menu')
@@ -31,5 +36,5 @@ export function useDishes() {
     return () => clearInterval(id)
   }, [load])
 
-  return { dishes, loading, error, refetch: load }
+  return { dishes, categories, loading, error, refetch: load }
 }

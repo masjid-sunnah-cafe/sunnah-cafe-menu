@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { MotionConfig, AnimatePresence } from 'framer-motion'
-import { categories, UI, getDishesText, getL10n, getL10nArray } from '../data/i18n'
+import { UI, getDishesText, getL10n, getL10nArray } from '../data/i18n'
 import { useDishes } from '../hooks/useDishes'
 import Header from '../components/Header'
 import PatternBorder from '../components/PatternBorder'
@@ -8,7 +8,7 @@ import StickyBar from '../components/StickyBar'
 import DishGrid from '../components/DishGrid'
 import DishDetailSheet from '../components/DishDetailSheet'
 
-const LANG_KEY = 'zahiiba-lang'
+const LANG_KEY = 'sunnah-cafe-lang'
 const ALL_CATEGORY = { id: 'all', label: { EN: 'All', FI: 'Kaikki', SO: 'Dhammaan' } }
 
 // ── Skeleton loader ───────────────────────────────────────────────────────────
@@ -42,10 +42,16 @@ export default function MenuPage() {
     document.documentElement.lang = lang.toLowerCase()
   }, [lang])
 
-  const { dishes, loading, error } = useDishes()
+  const { dishes, categories, loading, error } = useDishes()
 
   // "All" first, then the real categories.
-  const tabCategories = useMemo(() => [ALL_CATEGORY, ...categories], [])
+  const tabCategories = useMemo(() => [ALL_CATEGORY, ...categories], [categories])
+
+  useEffect(() => {
+    if (activeCategory !== 'all' && !categories.some((category) => category.id === activeCategory)) {
+      setActiveCategory('all')
+    }
+  }, [activeCategory, categories])
 
   const searching = query.trim().length > 0
 

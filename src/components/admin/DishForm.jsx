@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import {
   Dialog, DialogContent, DialogTitle, DialogDescription,
 } from '../ui/dialog'
@@ -10,7 +10,6 @@ import { Textarea } from '../ui/textarea'
 import { Switch } from '../ui/switch'
 import { Badge } from '../ui/badge'
 import { createDish, updateDish, uploadImage } from '../../hooks/useAdmin'
-import { categories } from '../../data/i18n'
 import { useAdminLang } from '../../lib/adminLang'
 import { Upload, X, Plus } from 'lucide-react'
 import { toast } from 'sonner'
@@ -19,15 +18,15 @@ import { toast } from 'sonner'
 const ALLERGEN_PRESETS = [
   { key: 'wheat',  label: { EN: 'Gluten (wheat)', FI: 'Gluteeni (vehnä)', SO: 'Gluten (qamadi)' }, color: 'wheat' },
   { key: 'dairy',  label: { EN: 'May contain dairy', FI: 'Saattaa sisältää maitoa', SO: 'Waxa laga yaabaa inuu leeyahay caano' }, color: 'dairy' },
-  { key: 'shared', label: { EN: 'Cooked in shared kitchen', FI: 'Jaettu keittiö', SO: 'Jiko la wadaago' }, color: 'shared' },
+  { key: 'lactose-free', label: { EN: 'Lactose-free', FI: 'Laktoositon', SO: 'Aan lahayn laktoos' }, color: 'dairy' },
   { key: 'nuts',   label: { EN: 'May contain nuts', FI: 'Saattaa sisältää pähkinöitä', SO: 'Waxa laga yaabaa inuu leeyahay kaad' }, color: 'shared' },
   { key: 'eggs',   label: { EN: 'Contains eggs', FI: 'Sisältää munia', SO: 'Waxaa ku jira ukun' }, color: 'shared' },
 ]
 
 const SPICE_OPTIONS = {
-  EN: ['No spice', 'Mild spice', 'Medium spice', 'Hot spice'],
-  FI: ['Ei mausteita', 'Mieto', 'Keskivahva', 'Tulinen'],
-  SO: ["Basbaas la'aan", 'Aad u yar', 'Dhexdhexaad', 'Kulul'],
+  EN: ['Mild spice', 'Medium spice', 'Hot spice'],
+  FI: ['Mieto', 'Keskivahva', 'Tulinen'],
+  SO: ['Aad u yar', 'Dhexdhexaad', 'Kulul'],
 }
 
 const SERVES_OPTIONS = {
@@ -36,14 +35,14 @@ const SERVES_OPTIONS = {
   SO: ['1 qof', '2 qof', '3–4 qof'],
 }
 
-function empty() {
+function empty(categories) {
   return {
     name:            { EN: '', FI: '', SO: '' },
     subtitle:        { EN: '', FI: '', SO: '' },
     description:     { EN: '', FI: '', SO: '' },
     longDescription: { EN: '', FI: '', SO: '' },
     price:           '',
-    category:        categories[0].id,
+    category:        categories[0]?.id || '',
     image:           '',
     isPopular:       false,
     inStock:         true,
@@ -51,7 +50,7 @@ function empty() {
     allergens:       [],
     meta: {
       halal:  true,
-      spice:  { EN: 'No spice', FI: 'Ei mausteita', SO: "Basbaas la'aan" },
+      spice:  { EN: 'Mild spice', FI: 'Mieto', SO: 'Aad u yar' },
       serves: { EN: 'Serves 1', FI: '1 hengelle', SO: '1 qof' },
     },
   }
@@ -76,7 +75,7 @@ function dishToForm(dish) {
     allergens:       dish.allergens ? JSON.parse(JSON.stringify(dish.allergens)) : [],
     meta: {
       halal:  dish.meta?.halal ?? true,
-      spice:  { ...dish.meta?.spice  } || { EN: 'No spice', FI: 'Ei mausteita', SO: "Basbaas la'aan" },
+      spice:  { ...dish.meta?.spice  } || { EN: 'Mild spice', FI: 'Mieto', SO: 'Aad u yar' },
       serves: { ...dish.meta?.serves } || { EN: 'Serves 1', FI: '1 hengelle', SO: '1 qof' },
     },
   }
@@ -134,17 +133,6 @@ function LangFields({ lang, form, setField, t }) {
           required
         />
       </div>
-      <div>
-        <Label htmlFor={`ing-${lang}`}>{t.fIngredients} * <span className="text-xs font-normal text-brand-text-muted">{t.fIngredientsHint}</span></Label>
-        <Input
-          id={`ing-${lang}`}
-          className="mt-1"
-          value={form.ingredients[lang]}
-          onChange={e => setField('ingredients', lang, e.target.value)}
-          placeholder={t.ph.ingredients(lang)}
-          required
-        />
-      </div>
       <div className="grid grid-cols-2 gap-3">
         <div>
           <Label htmlFor={`spice-${lang}`}>{t.fSpice} *</Label>
@@ -184,16 +172,18 @@ function LangFields({ lang, form, setField, t }) {
 }
 
 // ── Main form ─────────────────────────────────────────────────────────────────
-export default function DishForm({ dish, open, onClose, onSaved }) {
+export default function DishForm({ dish, categories, open, onClose, onSaved }) {
   const { t, lang: adminLang } = useAdminLang()
   const isEdit = !!dish
-  const [form, setForm]       = useState(() => dish ? dishToForm(dish) : empty())
+  const [form, setForm]       = useState(() => dish ? dishToForm(dish) : empty(categories))
   const [saving, setSaving]   = useState(false)
   const [uploading, setUploading] = useState(false)
   const fileRef = useRef(null)
 
-  // Reset form when dish prop changes
-  useState(() => { setForm(dish ? dishToForm(dish) : empty()) }, [dish])
+  // Reset form when its target dish changes or categories finish loading.
+  useEffect(() => {
+    setForm(dish ? dishToForm(dish) : empty(categories))
+  }, [dish, categories])
 
   function setField(path, key, val) {
     setForm(prev => {
@@ -337,6 +327,7 @@ export default function DishForm({ dish, open, onClose, onSaved }) {
                 className="mt-1 h-10 w-full rounded-xl border border-brand-border bg-white px-3 text-sm text-brand-text-dark focus:outline-none focus:ring-2 focus:ring-brand-gold"
                 value={form.category}
                 onChange={e => setFlat('category', e.target.value)}
+                disabled={categories.length === 0}
               >
                 {categories.map(c => (
                   <option key={c.id} value={c.id}>{c.label[adminLang]}</option>
