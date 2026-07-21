@@ -6,9 +6,10 @@ import AdminDishCard from '../components/admin/AdminDishCard'
 import DishForm from '../components/admin/DishForm'
 import CategoryManager from '../components/admin/CategoryManager'
 import StaffOrderQueue from '../components/admin/StaffOrderQueue'
+import OrderHistory from '../components/admin/OrderHistory'
 import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
-import { Plus, Search, Tags, UtensilsCrossed, CheckCircle2, XCircle, ListOrdered } from 'lucide-react'
+import { Plus, Search, Tags, UtensilsCrossed, CheckCircle2, XCircle, ListOrdered, History } from 'lucide-react'
 import { Toaster } from 'sonner'
 import { AdminLangProvider, useAdminLang } from '../lib/adminLang'
 
@@ -161,9 +162,18 @@ function AdminPageInner() {
           >
             <UtensilsCrossed className="h-4 w-4" /> {t.menuTab}
           </button>
+          <button
+            type="button"
+            onClick={() => setView('history')}
+            className={`inline-flex h-10 items-center gap-2 rounded-md px-4 text-sm font-bold ${view === 'history' ? 'bg-brand-gold text-brand-text-dark shadow-sm' : 'text-brand-text-muted hover:bg-brand-bg hover:text-brand-text-dark'}`}
+          >
+            <History className="h-4 w-4" /> {lang === 'FI' ? 'Historia' : 'History'}
+          </button>
         </div>
 
         {view === 'orders' && <StaffOrderQueue />}
+
+        {view === 'history' && <OrderHistory />}
 
         {view === 'menu' && <>
 

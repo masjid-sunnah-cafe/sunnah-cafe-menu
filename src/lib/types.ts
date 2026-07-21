@@ -108,6 +108,7 @@ export interface OrderItemSnapshot {
 export interface Order {
   id: string
   orderNumber: number
+  ticketDate: string
   ticketNumber: number
   customerFirstName: string
   fulfillmentLocation: FulfillmentLocation
