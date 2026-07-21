@@ -311,7 +311,7 @@ export default function DishForm({ dish, categories, open, onClose, onSaved }) {
                 id="price"
                 type="number"
                 min="0"
-                step="0.5"
+                step="0.01"
                 className="mt-1"
                 value={form.price}
                 onChange={e => setFlat('price', e.target.value)}
