@@ -47,7 +47,8 @@ export default function OrderStatusPage() {
     setStartingPayment(true)
     try {
       window.location.assign(await startSumupPayment(orderId, token))
-    } catch {
+    } catch (paymentError) {
+      console.error('SumUp checkout could not be created:', paymentError)
       setError(UI.paymentStartFailed[lang])
       setStartingPayment(false)
     }

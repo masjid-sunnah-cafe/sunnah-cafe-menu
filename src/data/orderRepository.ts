@@ -1,6 +1,15 @@
 import { supabase } from '../lib/supabase'
 import type { CartItem, FulfillmentLocation, Order, PaymentMethod } from '../lib/types'
 
+async function getFunctionErrorMessage(error: unknown, fallback: string): Promise<string> {
+  const response = (error as { context?: unknown })?.context
+  if (response instanceof Response) {
+    const body = await response.clone().json().catch(() => null) as { error?: unknown } | null
+    if (typeof body?.error === 'string') return body.error
+  }
+  return error instanceof Error && error.message ? error.message : fallback
+}
+
 interface CreateOrderInput {
   fulfillmentLocation: FulfillmentLocation
   customerNote: string
@@ -27,7 +36,7 @@ export async function createOrder(input: CreateOrderInput): Promise<CreateOrderR
     body: input,
   })
 
-  if (error) throw new Error(error.message || 'Could not create order.')
+  if (error) throw new Error(await getFunctionErrorMessage(error, 'Could not create order.'))
   if (!data?.orderId) throw new Error('The order service returned an invalid response.')
   return data
 }
@@ -41,7 +50,7 @@ export async function getOrderStatus(orderId: string, statusToken: string): Prom
     body: { orderId, statusToken },
   })
 
-  if (error) throw new Error(error.message || 'Could not load order.')
+  if (error) throw new Error(await getFunctionErrorMessage(error, 'Could not load order.'))
   if (!data?.id) throw new Error('The order service returned an invalid response.')
   return data
 }
@@ -51,7 +60,7 @@ export async function startSumupPayment(orderId: string, statusToken: string): P
   const { data, error } = await supabase.functions.invoke<{ checkoutUrl: string }>('create-sumup-checkout', {
     body: { orderId, statusToken },
   })
-  if (error) throw new Error(error.message || 'Could not start payment.')
+  if (error) throw new Error(await getFunctionErrorMessage(error, 'Could not start payment.'))
   if (!data?.checkoutUrl) throw new Error('The payment service returned an invalid response.')
   return data.checkoutUrl
 }

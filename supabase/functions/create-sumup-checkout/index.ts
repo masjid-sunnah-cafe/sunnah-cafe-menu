@@ -6,6 +6,28 @@ async function sha256(value: string): Promise<string> {
   return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('')
 }
 
+function getSumupErrorMessage(checkout: unknown): string {
+  if (!checkout || typeof checkout !== 'object') return 'SumUp checkout creation failed.'
+  const result = checkout as {
+    detail?: unknown
+    title?: unknown
+    message?: unknown
+    error_message?: unknown
+    error?: { message?: unknown } | unknown
+    errors?: Array<{ message?: unknown; error_message?: unknown; error_code?: unknown }>
+  }
+  if (typeof result.detail === 'string') return result.detail
+  if (typeof result.message === 'string') return result.message
+  if (typeof result.title === 'string') return result.title
+  if (typeof result.error_message === 'string') return result.error_message
+  if (result.error && typeof result.error === 'object' && typeof result.error.message === 'string') return result.error.message
+  const firstError = result.errors?.[0]
+  if (typeof firstError?.message === 'string') return firstError.message
+  if (typeof firstError?.error_message === 'string') return firstError.error_message
+  if (typeof firstError?.error_code === 'string') return `SumUp rejected the checkout: ${firstError.error_code}`
+  return 'SumUp checkout creation failed.'
+}
+
 Deno.serve(async (request) => {
   if (request.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
   if (request.method !== 'POST') return jsonResponse({ error: 'Method not allowed.' }, 405)
@@ -63,7 +85,7 @@ Deno.serve(async (request) => {
     const checkoutUrl = checkout.hosted_checkout_url || checkout.hosted_checkout?.hosted_checkout_url
     if (!response.ok || !checkout.id || !checkoutUrl) {
       await admin.from('payment_attempts').update({ status: 'failed' }).eq('id', attempt.id)
-      throw new Error(checkout.message || 'SumUp checkout creation failed.')
+      throw new Error(getSumupErrorMessage(checkout))
     }
     await admin.from('payment_attempts').update({ sumup_checkout_id: checkout.id }).eq('id', attempt.id)
     return jsonResponse({ checkoutUrl }, 201)

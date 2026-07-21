@@ -33,6 +33,14 @@ begin
     or (current_order.status = 'accepted' and target_status in ('ready', 'cancelled'))
     or (current_order.status = 'preparing' and target_status in ('ready', 'cancelled'))
     or (current_order.status = 'ready' and target_status = 'completed')
+    or (
+      current_order.status = 'awaiting_payment'
+      and target_status = 'cancelled'
+      and not exists (
+        select 1 from public.payment_attempts
+        where order_id = current_order.id and status = 'pending'
+      )
+    )
   ) then
     raise exception 'Invalid order status transition: % -> %', current_order.status, target_status;
   end if;
@@ -43,7 +51,11 @@ begin
   previous_status := current_order.status;
   update public.orders
   set status = target_status,
-      payment_status = case when target_status = 'awaiting_payment' then 'pending' else payment_status end,
+      payment_status = case
+        when target_status = 'awaiting_payment' then 'pending'
+        when target_status = 'cancelled' and current_order.status = 'awaiting_payment' then 'failed'
+        else payment_status
+      end,
       expires_at = case when target_status = 'awaiting_payment' then now() + interval '10 minutes' else expires_at end,
       accepted_at = case when target_status = 'accepted' then now() else accepted_at end,
       completed_at = case when target_status = 'completed' then now() else completed_at end

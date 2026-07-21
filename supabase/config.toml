@@ -5,7 +5,8 @@ verify_jwt = true
 verify_jwt = true
 
 [functions.create-sumup-checkout]
-verify_jwt = true
+# Customer payment links use the per-order status token, not Supabase Auth.
+verify_jwt = false
 
 # SumUp cannot send a Supabase JWT. The handler verifies every checkout by
 # fetching it from SumUp with the server-side API key before updating an order.

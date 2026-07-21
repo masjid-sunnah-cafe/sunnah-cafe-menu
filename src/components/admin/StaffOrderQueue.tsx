@@ -164,7 +164,7 @@ export default function StaffOrderQueue() {
                     <Check className="mr-2 h-4 w-4" /> {labels[action[1]]}
                   </Button>
                 )}
-                {order.status !== 'ready' && order.status !== 'awaiting_payment' && (
+                {order.status !== 'ready' && (
                   <Button variant="outline" disabled={busyId === order.id} onClick={() => run(order.id, () => transitionOrder(order.id, 'cancelled'))}>
                     <X className="mr-2 h-4 w-4" /> {labels.cancel}
                   </Button>
