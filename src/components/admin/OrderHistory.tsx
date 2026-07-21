@@ -9,8 +9,8 @@ import type { Order } from '../../lib/types'
 import { Button } from '../ui/button'
 
 const copy = {
-  EN: { title: 'Order history', empty: 'No completed, cancelled or expired orders', refresh: 'Refresh history', all: 'All outcomes', completed: 'Handed over / delivered', cancelled: 'Cancelled', expired: 'Expired', date: 'Date', last30: 'Last 30 days' },
-  FI: { title: 'Tilaushistoria', empty: 'Ei luovutettuja, peruttuja tai vanhentuneita tilauksia', refresh: 'Päivitä historia', all: 'Kaikki tilat', completed: 'Luovutettu / toimitettu', cancelled: 'Peruttu', expired: 'Vanhentunut', date: 'Päivä', last30: 'Viimeiset 30 päivää' },
+  EN: { title: 'Order history', empty: 'No completed, cancelled or expired orders', refresh: 'Refresh history', all: 'All outcomes', completed: 'Handed over / delivered', cancelled: 'Cancelled', expired: 'Expired', date: 'Date', last30: 'Last 30 days', ticket: 'Pickup ticket', orderNumber: 'Order number' },
+  FI: { title: 'Tilaushistoria', empty: 'Ei luovutettuja, peruttuja tai vanhentuneita tilauksia', refresh: 'Päivitä historia', all: 'Kaikki tilat', completed: 'Luovutettu / toimitettu', cancelled: 'Peruttu', expired: 'Vanhentunut', date: 'Päivä', last30: 'Viimeiset 30 päivää', ticket: 'Noutotunnus', orderNumber: 'Tilausnumero' },
 }
 
 type HistoryStatus = 'completed' | 'cancelled' | 'expired' | 'all'
@@ -75,7 +75,8 @@ export default function OrderHistory() {
           <article key={order.id} className="border border-brand-border border-l-4 border-l-brand-gold bg-white p-4 shadow-sm">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="font-display text-xl font-bold">#{String(order.ticketNumber).padStart(2, '0')}</p>
+                <p className="font-display text-xl font-bold">{labels.ticket} #{String(order.ticketNumber).padStart(2, '0')}</p>
+                <p className="mt-1 text-xs font-bold text-brand-text-muted">{labels.orderNumber} #{order.orderNumber}</p>
                 <p className="mt-1 text-sm text-brand-text-muted">{formatTicketDate(order.ticketDate, language)}</p>
               </div>
               <span className="rounded-full bg-[#F7E8D5] px-3 py-1 text-xs font-bold text-brand-dark">{UI.orderStatuses[order.status][lang]}</span>
