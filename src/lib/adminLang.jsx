@@ -31,11 +31,11 @@ export function useAdminLang() {
   return ctx
 }
 
-/** Small inline EN/FI/SO switcher for the admin header and login screen. */
+/** Small inline FI/EN switcher for the admin header and login screen. */
 export function AdminLangSwitcher({ className = '' }) {
   const { lang, setLang } = useAdminLang()
   return (
-    <div className={'flex items-center rounded-full border border-brand-gold/40 bg-brand-dark/40 p-0.5 ' + className}>
+    <div className={'flex items-center rounded-full border border-brand-gold/60 bg-brand-bg p-0.5 ' + className}>
       {ADMIN_LANGS.map((code) => (
         <button
           key={code}
@@ -46,8 +46,8 @@ export function AdminLangSwitcher({ className = '' }) {
           className={
             'rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide transition-colors ' +
             (code === lang
-              ? 'bg-brand-gold text-brand-dark'
-              : 'text-brand-gold/80 hover:text-white')
+              ? 'bg-brand-gold text-brand-dark shadow-sm'
+              : 'text-brand-text-muted hover:text-brand-text-dark')
           }
         >
           {code}

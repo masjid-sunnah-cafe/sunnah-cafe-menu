@@ -6,9 +6,9 @@ import { useDishes } from '../hooks/useDishes'
 import { formatPrice } from '../lib/format'
 import { Button } from '../components/ui/button'
 
-export default function CartPage({ lang = 'EN' }) {
+export default function CartPage({ lang = 'FI' }) {
   const savedLang = localStorage.getItem('sunnah-cafe-lang')
-  const currentLang = savedLang === 'FI' || savedLang === 'SO' ? savedLang : lang
+  const currentLang = savedLang === 'FI' ? savedLang : lang
   const navigate = useNavigate()
   const { items, setQuantity, removeItem } = useCart()
   const { dishes, loading } = useDishes()

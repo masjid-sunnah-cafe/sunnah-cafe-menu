@@ -35,3 +35,5 @@ public/uploads/*
 *.sqlite
 *.sqlite-shm
 *.sqlite-wal
+.vercel
+supabase/.temp/

@@ -1,7 +1,8 @@
 import { ArrowLeft, Banknote, CreditCard, Globe2 } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { createOrder } from '../data/orderRepository'
+import { getOrderingMode } from '../data/orderingRepository'
 import { UI, getL10n } from '../data/i18n'
 import { useCart } from '../hooks/useCart'
 import { useDishes } from '../hooks/useDishes'
@@ -23,7 +24,7 @@ const PAYMENT_OPTIONS = [
 
 function getCurrentLang() {
   const saved = localStorage.getItem('sunnah-cafe-lang')
-  return saved === 'FI' || saved === 'SO' ? saved : 'EN'
+  return saved === 'EN' ? saved : 'FI'
 }
 
 export default function CheckoutPage() {
@@ -37,6 +38,11 @@ export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState('sumup_online')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const [orderingMode, setOrderingMode] = useState('approval_required')
+
+  useEffect(() => {
+    void getOrderingMode().then(setOrderingMode).catch(() => {})
+  }, [])
 
   const rows = items.flatMap((item) => {
     const dish = dishes.find((candidate) => candidate.id === item.dishId)
@@ -46,7 +52,7 @@ export default function CheckoutPage() {
 
   async function handleSubmit(event) {
     event.preventDefault()
-    if (!firstName.trim() || rows.length === 0 || submitting) return
+    if (!firstName.trim() || rows.length === 0 || submitting || orderingMode === 'closed') return
 
     setSubmitting(true)
     setError('')
@@ -62,10 +68,11 @@ export default function CheckoutPage() {
         statusToken,
       })
       sessionStorage.setItem(`sunnah-cafe-order:${result.orderId}`, result.statusToken)
+      const orderUrl = `/order/${result.orderId}#token=${encodeURIComponent(result.statusToken)}`
       if (result.checkoutUrl) {
         window.location.assign(result.checkoutUrl)
       } else {
-        navigate(`/order/${result.orderId}`)
+        navigate(orderUrl)
       }
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : UI.orderFailed[lang])
@@ -96,6 +103,8 @@ export default function CheckoutPage() {
           {UI.backToCart[lang]}
         </button>
         <h1 className="mt-5 font-display text-3xl font-bold">{UI.checkoutTitle[lang]}</h1>
+        {orderingMode === 'closed' && <p role="status" className="mt-5 rounded-lg bg-red-50 p-4 text-sm font-bold text-brand-red">{UI.orderingClosed[lang]}</p>}
+        {orderingMode === 'approval_required' && <p className="mt-5 rounded-lg bg-brand-gold/10 p-4 text-sm font-bold text-brand-text-dark">{UI.approvalRequired[lang]}</p>}
 
         <section className="mt-8 border-t border-brand-border pt-6">
           <h2 className="font-display text-xl font-bold">{UI.customerDetails[lang]}</h2>
@@ -174,7 +183,7 @@ export default function CheckoutPage() {
         {error && <p role="alert" className="mt-5 rounded-lg bg-red-50 p-4 text-sm font-bold text-brand-red">{error}</p>}
 
         <div className="sticky bottom-0 -mx-4 mt-6 border-t border-brand-border bg-brand-bg/95 px-4 py-4 backdrop-blur md:static md:mx-0 md:px-0">
-          <Button type="submit" disabled={submitting || loading || !firstName.trim()} className="h-12 w-full text-base">
+          <Button type="submit" disabled={submitting || loading || !firstName.trim() || orderingMode === 'closed'} className="h-12 w-full text-base">
             {submitting ? UI.submittingOrder[lang] : UI.placeOrder[lang]}
           </Button>
         </div>

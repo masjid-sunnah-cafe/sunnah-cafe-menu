@@ -69,7 +69,7 @@ export default function AdminDishCard({ dish, onEdit, onDeleted, onUpdated }) {
 
   return (
     <>
-      <div className={`relative flex flex-col overflow-hidden rounded-2xl border bg-white shadow-sm transition-all duration-200 ${!dish.inStock ? 'border-brand-border/50 opacity-60' : 'border-brand-border hover:shadow-md'}`}>
+      <div className={`relative flex flex-col overflow-hidden rounded-lg border bg-white shadow-sm transition-all duration-200 ${!dish.inStock ? 'border-brand-border/50 opacity-60' : 'border-brand-border hover:border-brand-gold/60 hover:shadow-md'}`}>
         {/* Out of stock ribbon */}
         {!dish.inStock && (
           <div className="absolute top-3 left-3 z-10">
@@ -116,7 +116,7 @@ export default function AdminDishCard({ dish, onEdit, onDeleted, onUpdated }) {
           </div>
 
           {/* In-stock toggle — the most common action, made large */}
-          <div className="mt-1 flex items-center justify-between rounded-xl bg-brand-bg px-3 py-2">
+          <div className="mt-1 flex items-center justify-between rounded-lg bg-brand-bg px-3 py-2">
             <span className="text-xs font-semibold text-brand-text-dark">
               {dish.inStock ? `✅ ${t.inStockLabel}` : `❌ ${t.outOfStockLabel}`}
             </span>

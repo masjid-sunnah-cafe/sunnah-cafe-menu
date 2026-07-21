@@ -3,10 +3,10 @@ import { MotionConfig, AnimatePresence } from 'framer-motion'
 import { UI, getDishesText, getL10n, getL10nArray } from '../data/i18n'
 import { useDishes } from '../hooks/useDishes'
 import Header from '../components/Header'
-import PatternBorder from '../components/PatternBorder'
 import StickyBar from '../components/StickyBar'
 import DishGrid from '../components/DishGrid'
 import DishDetailSheet from '../components/DishDetailSheet'
+import { getOrderingMode } from '../data/orderingRepository'
 
 const LANG_KEY = 'sunnah-cafe-lang'
 const ALL_CATEGORY = { id: 'all', label: { EN: 'All', FI: 'Kaikki', SO: 'Dhammaan' } }
@@ -30,17 +30,22 @@ function SkeletonCard() {
 export default function MenuPage() {
   const [lang, setLang] = useState(() => {
     const saved = localStorage.getItem(LANG_KEY)
-    return saved === 'EN' || saved === 'FI' || saved === 'SO' ? saved : 'EN'
+    return saved === 'EN' || saved === 'FI' ? saved : 'FI'
   })
   const [activeCategory, setActiveCategory] = useState('all')
   const [query, setQuery]                   = useState('')
   const [openItemId, setOpenItemId]         = useState(null)
   const openerRef = useRef(null)
+  const [orderingMode, setOrderingMode] = useState('approval_required')
 
   useEffect(() => {
     localStorage.setItem(LANG_KEY, lang)
     document.documentElement.lang = lang.toLowerCase()
   }, [lang])
+
+  useEffect(() => {
+    void getOrderingMode().then(setOrderingMode).catch(() => {})
+  }, [])
 
   const { dishes, categories, loading, error } = useDishes()
 
@@ -107,7 +112,12 @@ export default function MenuPage() {
         />
 
         <Header lang={lang} onLangChange={setLang} />
-        <PatternBorder />
+
+        {orderingMode === 'closed' && (
+          <p role="status" className="relative z-10 mx-auto max-w-5xl px-4 pt-5 text-center text-sm font-bold text-brand-red md:px-6">
+            {UI.orderingClosed[lang]}
+          </p>
+        )}
 
         <StickyBar
           lang={lang}

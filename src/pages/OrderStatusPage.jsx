@@ -1,28 +1,31 @@
 import { ArrowLeft, CheckCircle2, Clock3, RefreshCw } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-import { getOrderStatus } from '../data/orderRepository'
-import { getL10n, UI } from '../data/i18n'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { getOrderStatus, startSumupPayment } from '../data/orderRepository'
+import { getL10n, getPaymentStatusLabel, UI } from '../data/i18n'
 import { useCart } from '../hooks/useCart'
 import { formatPrice } from '../lib/format'
 import { Button } from '../components/ui/button'
 
 function getCurrentLang() {
   const saved = localStorage.getItem('sunnah-cafe-lang')
-  return saved === 'FI' || saved === 'SO' ? saved : 'EN'
+  return saved === 'EN' ? saved : 'FI'
 }
 
 const finishedStatuses = new Set(['completed', 'cancelled', 'expired'])
 
 export default function OrderStatusPage() {
   const { orderId } = useParams()
+  const location = useLocation()
   const navigate = useNavigate()
   const { clearCart } = useCart()
   const lang = getCurrentLang()
-  const token = orderId ? sessionStorage.getItem(`sunnah-cafe-order:${orderId}`) : null
+  const tokenFromUrl = new URLSearchParams(location.hash.slice(1)).get('token')
+  const token = orderId ? tokenFromUrl || sessionStorage.getItem(`sunnah-cafe-order:${orderId}`) : null
   const [order, setOrder] = useState(null)
   const [error, setError] = useState('')
   const [refreshing, setRefreshing] = useState(false)
+  const [startingPayment, setStartingPayment] = useState(false)
 
   async function refresh() {
     if (!orderId || !token) return
@@ -38,6 +41,21 @@ export default function OrderStatusPage() {
       setRefreshing(false)
     }
   }
+
+  async function handlePayment() {
+    if (!orderId || !token || startingPayment) return
+    setStartingPayment(true)
+    try {
+      window.location.assign(await startSumupPayment(orderId, token))
+    } catch {
+      setError(UI.paymentStartFailed[lang])
+      setStartingPayment(false)
+    }
+  }
+
+  useEffect(() => {
+    if (orderId && tokenFromUrl) sessionStorage.setItem(`sunnah-cafe-order:${orderId}`, tokenFromUrl)
+  }, [orderId, tokenFromUrl])
 
   useEffect(() => {
     if (!orderId || !token) return undefined
@@ -84,10 +102,16 @@ export default function OrderStatusPage() {
             ? <CheckCircle2 className="mx-auto text-emerald-700" size={42} aria-hidden="true" />
             : <Clock3 className="mx-auto text-brand-gold" size={42} aria-hidden="true" />}
           <p className="mt-4 font-display text-2xl font-bold">{activeStatus}</p>
-          {order && <p className="mt-2 text-sm font-bold text-brand-text-muted">{UI.paymentStatuses[order.paymentStatus][lang]}</p>}
+          {order && <p className="mt-2 text-sm font-bold text-brand-text-muted">{getPaymentStatusLabel(order.paymentMethod, order.paymentStatus, lang)}</p>}
         </section>
 
         {error && <p role="alert" className="mt-5 rounded-lg bg-red-50 p-4 text-sm font-bold text-brand-red">{error}</p>}
+
+        {order?.status === 'awaiting_payment' && order.paymentMethod === 'sumup_online' && (
+          <Button className="mt-5 h-12 w-full text-base" disabled={startingPayment} onClick={handlePayment}>
+            {startingPayment ? UI.startingPayment[lang] : UI.payNow[lang]}
+          </Button>
+        )}
 
         {order && (
           <section className="mt-8">

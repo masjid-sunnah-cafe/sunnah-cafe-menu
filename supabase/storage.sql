@@ -1,4 +1,4 @@
--- Zahiiba — Storage bucket for menu images.
+-- Sunnah Cafe — Storage bucket for menu images.
 -- Run in Supabase dashboard → SQL Editor after schema.sql.
 
 -- Public bucket so <img src> works without signed URLs.

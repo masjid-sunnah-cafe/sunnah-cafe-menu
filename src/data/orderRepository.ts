@@ -46,3 +46,13 @@ export async function getOrderStatus(orderId: string, statusToken: string): Prom
   if (!data?.id) throw new Error('The order service returned an invalid response.')
   return data
 }
+
+export async function startSumupPayment(orderId: string, statusToken: string): Promise<string> {
+  if (!supabase) throw new Error('Ordering requires a configured Supabase project.')
+  const { data, error } = await supabase.functions.invoke<{ checkoutUrl: string }>('create-sumup-checkout', {
+    body: { orderId, statusToken },
+  })
+  if (error) throw new Error(error.message || 'Could not start payment.')
+  if (!data?.checkoutUrl) throw new Error('The payment service returned an invalid response.')
+  return data.checkoutUrl
+}

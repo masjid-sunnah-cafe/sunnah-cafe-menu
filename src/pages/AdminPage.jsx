@@ -15,8 +15,8 @@ import { AdminLangProvider, useAdminLang } from '../lib/adminLang'
 // ── Stat card ─────────────────────────────────────────────────────────────────
 function StatCard({ icon: Icon, label, value, color }) {
   return (
-    <div className="flex items-center gap-3 rounded-2xl border border-brand-border bg-white px-4 py-3 shadow-sm">
-      <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${color}`}>
+    <div className="flex items-center gap-3 rounded-lg border border-brand-border bg-white px-4 py-3 shadow-sm">
+      <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${color}`}>
         <Icon className="h-5 w-5" />
       </div>
       <div>
@@ -146,20 +146,20 @@ function AdminPageInner() {
           <StatCard icon={XCircle}         label={t.outOfStock}  value={outStock}       color="bg-tag-bg-red text-tag-text-red" />
         </div>
 
-        <div className="mt-6 inline-flex rounded-lg border border-brand-border bg-white p-1">
+        <div className="mt-6 inline-flex rounded-lg border border-brand-border bg-white p-1 shadow-sm">
           <button
             type="button"
             onClick={() => setView('orders')}
-            className={`inline-flex h-10 items-center gap-2 rounded-md px-4 text-sm font-bold ${view === 'orders' ? 'bg-brand-dark text-white' : 'text-brand-text-muted'}`}
+            className={`inline-flex h-10 items-center gap-2 rounded-md px-4 text-sm font-bold ${view === 'orders' ? 'bg-brand-gold text-brand-text-dark shadow-sm' : 'text-brand-text-muted hover:bg-brand-bg hover:text-brand-text-dark'}`}
           >
-            <ListOrdered className="h-4 w-4" /> Orders
+            <ListOrdered className="h-4 w-4" /> {t.ordersTab}
           </button>
           <button
             type="button"
             onClick={() => setView('menu')}
-            className={`inline-flex h-10 items-center gap-2 rounded-md px-4 text-sm font-bold ${view === 'menu' ? 'bg-brand-dark text-white' : 'text-brand-text-muted'}`}
+            className={`inline-flex h-10 items-center gap-2 rounded-md px-4 text-sm font-bold ${view === 'menu' ? 'bg-brand-gold text-brand-text-dark shadow-sm' : 'text-brand-text-muted hover:bg-brand-bg hover:text-brand-text-dark'}`}
           >
-            <UtensilsCrossed className="h-4 w-4" /> Menu
+            <UtensilsCrossed className="h-4 w-4" /> {t.menuTab}
           </button>
         </div>
 

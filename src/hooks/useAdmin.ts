@@ -14,20 +14,19 @@ import { uploadImage as upload } from '../data/imageUpload'
  */
 
 const SESSION_KEY = 'zahiiba_admin_session'
-const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL || 'admin@zahiiba.fi'
 const DEMO_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || 'zahiiba'
 
 // ── Auth ─────────────────────────────────────────────────────────────────────
 export const isLoggedIn = (): boolean => localStorage.getItem(SESSION_KEY) === '1'
 
-export async function login(password: string): Promise<void> {
+export async function login(email: string, password: string): Promise<void> {
   if (supabase) {
     const { error } = await supabase.auth.signInWithPassword({
-      email: ADMIN_EMAIL,
+      email,
       password,
     })
     if (error) throw new Error(error.message)
-  } else if (password !== DEMO_PASSWORD) {
+  } else if (email !== 'admin@example.com' || password !== DEMO_PASSWORD) {
     throw new Error('Invalid password')
   }
   localStorage.setItem(SESSION_KEY, '1')

@@ -1,6 +1,6 @@
 // Static UI strings and categories — these don't change often enough to need DB storage
 
-export const LANGS = ['EN', 'FI', 'SO']
+export const LANGS = ['FI', 'EN']
 
 export const categories = [
   { id: 'food',        label: { EN: 'Food',        FI: 'Ruoka',         SO: 'Cunto' } },
@@ -53,7 +53,7 @@ export const UI = {
     mens_cafe_hall:          { EN: "Men’s café hall", FI: 'Kahvion miesten saliin', SO: 'Hoolka kafateeriyada ragga' },
   },
   paymentOptions: {
-    sumup_online:       { EN: 'Pay online with SumUp', FI: 'Maksa verkossa SumUpilla', SO: 'SumUp kaga bixi online' },
+    sumup_online:       { EN: 'Pay online', FI: 'Maksa verkossa', SO: 'Ku bixi online' },
     card_on_fulfillment: { EN: 'Pay by card on site', FI: 'Maksa kortilla paikan päällä', SO: 'Kaarka kaga bixi goobta' },
     cash_on_fulfillment: { EN: 'Pay with cash', FI: 'Maksa käteisellä', SO: 'Ku bixi lacag caddaan ah' },
   },
@@ -73,7 +73,7 @@ export const UI = {
     accepted: { EN: 'Order accepted', FI: 'Tilaus hyväksytty', SO: 'Dalabka waa la aqbalay' },
     preparing: { EN: 'Preparing your order', FI: 'Tilausta valmistellaan', SO: 'Dalabka waa la diyaarinayaa' },
     ready: { EN: 'Your order is ready', FI: 'Tilauksesi on valmis', SO: 'Dalabkaagu waa diyaar' },
-    completed: { EN: 'Order completed', FI: 'Tilaus valmis', SO: 'Dalabka waa la dhammeeyay' },
+    completed: { EN: 'Order handed over or delivered', FI: 'Tilaus luovutettu tai toimitettu', SO: 'Dalabka waa la wareejiyay ama la geeyay' },
     cancelled: { EN: 'Order cancelled', FI: 'Tilaus peruttu', SO: 'Dalabka waa la joojiyay' },
     expired: { EN: 'Approval time expired', FI: 'Hyväksymisaika päättyi', SO: 'Waqtiga ansixinta wuu dhammaaday' },
   },
@@ -84,6 +84,18 @@ export const UI = {
     failed: { EN: 'Payment failed', FI: 'Maksu epäonnistui', SO: 'Lacag-bixintu way fashilantay' },
     refunded: { EN: 'Refunded', FI: 'Hyvitetty', SO: 'Lacagta waa la celiyay' },
   },
+  onlinePaymentStatuses: {
+    unpaid: { EN: 'Online payment after approval', FI: 'Verkkomaksu hyväksynnän jälkeen', SO: 'Lacag-bixinta online-ka ansixinta kadib' },
+    pending: { EN: 'Payment pending', FI: 'Maksu odottaa', SO: 'Lacag-bixintu way sugaysaa' },
+    paid: { EN: 'Paid online', FI: 'Maksettu verkossa', SO: 'Online ayaa lagu bixiyay' },
+    failed: { EN: 'Online payment failed', FI: 'Verkkomaksu epäonnistui', SO: 'Lacag-bixinta online-ka way fashilantay' },
+    refunded: { EN: 'Refunded', FI: 'Hyvitetty', SO: 'Lacagta waa la celiyay' },
+  },
+  orderingClosed: { EN: 'The cafe is not accepting orders right now.', FI: 'Kahvila ei vastaanota tilauksia juuri nyt.', SO: 'Maqaaxidu hadda ma qaadanayso dalabyo.' },
+  approvalRequired: { EN: 'Staff will confirm availability before payment.', FI: 'Henkilökunta vahvistaa saatavuuden ennen maksua.', SO: 'Shaqaaluhu waxay xaqiijinayaan helitaanka ka hor lacag-bixinta.' },
+  payNow: { EN: 'Pay now', FI: 'Maksa nyt', SO: 'Bixi hadda' },
+  startingPayment: { EN: 'Opening payment…', FI: 'Avataan maksua…', SO: 'Lacag-bixinta waa la furayaa…' },
+  paymentStartFailed: { EN: 'Could not start payment.', FI: 'Maksua ei voitu aloittaa.', SO: 'Lacag-bixinta lama bilaabi karin.' },
 }
 
 export function getDishesText(lang, count) {
@@ -96,6 +108,11 @@ export function getL10n(field, lang) {
   if (!field) return ''
   if (typeof field === 'string') return field
   return field[lang] || field['EN'] || Object.values(field)[0] || ''
+}
+
+export function getPaymentStatusLabel(paymentMethod, paymentStatus, lang) {
+  const labels = paymentMethod === 'sumup_online' ? UI.onlinePaymentStatuses : UI.paymentStatuses
+  return labels[paymentStatus]?.[lang] || labels[paymentStatus]?.EN || ''
 }
 
 export function getL10nArray(field, lang) {

@@ -1,4 +1,4 @@
--- Zahiiba — single-tenant menu schema for Supabase (Postgres).
+-- Sunnah Cafe — single-tenant menu schema for Supabase (Postgres).
 -- Run this in the Supabase dashboard → SQL Editor, or via the Supabase CLI.
 --
 -- Model: one `dishes` table. Menus are public (anyone can read); only

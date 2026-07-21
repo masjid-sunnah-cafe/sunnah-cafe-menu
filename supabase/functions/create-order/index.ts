@@ -73,13 +73,6 @@ Deno.serve(async (request) => {
     const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
     if (!supabaseUrl || !serviceRoleKey) throw new Error('Order service is not configured.')
 
-    const sumupApiKey = Deno.env.get('SUMUP_API_KEY')
-    const merchantCode = Deno.env.get('SUMUP_MERCHANT_CODE')
-    const publicSiteUrl = Deno.env.get('PUBLIC_SITE_URL')
-    if (body.paymentMethod === 'sumup_online' && (!sumupApiKey || !merchantCode || !publicSiteUrl)) {
-      throw new Error('SumUp is not configured.')
-    }
-
     const admin = createClient(supabaseUrl, serviceRoleKey, {
       auth: { persistSession: false, autoRefreshToken: false },
     })
@@ -95,7 +88,7 @@ Deno.serve(async (request) => {
 
     if (orderError || !order) throw new Error(orderError?.message || 'Could not create order.')
 
-    if (body.paymentMethod !== 'sumup_online') {
+    if (body.paymentMethod !== 'sumup_online' || order.status !== 'awaiting_payment') {
       return jsonResponse({
         orderId: order.id,
         orderNumber: order.order_number,
@@ -104,6 +97,11 @@ Deno.serve(async (request) => {
         expiresAt: order.expires_at,
       }, 201)
     }
+
+    const sumupApiKey = Deno.env.get('SUMUP_API_KEY')
+    const merchantCode = Deno.env.get('SUMUP_MERCHANT_CODE')
+    const publicSiteUrl = Deno.env.get('PUBLIC_SITE_URL')
+    if (!sumupApiKey || !merchantCode || !publicSiteUrl) throw new Error('SumUp is not configured.')
 
     const checkoutReference = `sunnah-${order.id}-${crypto.randomUUID()}`
     const { data: attempt, error: attemptError } = await admin
@@ -130,7 +128,7 @@ Deno.serve(async (request) => {
         merchant_code: merchantCode!,
         description: `Sunnah Cafe #${order.order_number}`,
         return_url: `${supabaseUrl}/functions/v1/sumup-webhook`,
-        redirect_url: `${publicSiteUrl!.replace(/\/$/, '')}/order/${order.id}`,
+        redirect_url: `${publicSiteUrl!.replace(/\/$/, '')}/order/${order.id}#token=${encodeURIComponent(body.statusToken)}`,
         hosted_checkout: { enabled: true },
         valid_until: order.expires_at,
       }),

@@ -1,13 +1,15 @@
 // Admin-panel UI strings in EN / FI / SO. Kept separate from the customer
 // strings (src/data/i18n.js) since the audience and vocabulary differ.
 
-export const ADMIN_LANGS = ['EN', 'FI', 'SO']
-export const ADMIN_LANG_NAMES = { EN: 'English', FI: 'Suomi', SO: 'Soomaali' }
+export const ADMIN_LANGS = ['FI', 'EN']
+export const ADMIN_LANG_NAMES = { FI: 'Suomi', EN: 'English' }
 
 const STRINGS = {
   EN: {
     // Login
     dashboard: 'Kitchen Dashboard',
+    emailLabel: 'Email address',
+    emailPlaceholder: 'name@example.com',
     passwordLabel: 'Kitchen password',
     passwordPlaceholder: 'Enter password',
     enterKitchen: 'Enter kitchen →',
@@ -18,6 +20,8 @@ const STRINGS = {
     // Header
     logout: 'Log out',
     dishesTotal: (n) => `${n} dishes total`,
+    ordersTab: 'Orders',
+    menuTab: 'Menu',
     // Stats
     totalDishes: 'Total dishes',
     inStock: 'In stock',
@@ -108,6 +112,8 @@ const STRINGS = {
 
   FI: {
     dashboard: 'Keittiön hallinta',
+    emailLabel: 'Sähköpostiosoite',
+    emailPlaceholder: 'nimi@esimerkki.fi',
     passwordLabel: 'Keittiön salasana',
     passwordPlaceholder: 'Syötä salasana',
     enterKitchen: 'Kirjaudu →',
@@ -117,6 +123,8 @@ const STRINGS = {
     wrongPassword: 'Väärä salasana. Yritä uudelleen.',
     logout: 'Kirjaudu ulos',
     dishesTotal: (n) => `${n} annosta yhteensä`,
+    ordersTab: 'Tilaukset',
+    menuTab: 'Menu',
     totalDishes: 'Annoksia yhteensä',
     inStock: 'Saatavilla',
     outOfStock: 'Loppu',
@@ -203,6 +211,8 @@ const STRINGS = {
 
   SO: {
     dashboard: 'Maamulka Jikada',
+    emailLabel: 'Cinwaanka iimaylka',
+    emailPlaceholder: 'magac@example.com',
     passwordLabel: 'Furaha sirta ah ee jikada',
     passwordPlaceholder: 'Geli furaha sirta ah',
     enterKitchen: 'Gal →',
@@ -212,6 +222,8 @@ const STRINGS = {
     wrongPassword: 'Furaha sirta ah waa qalad. Isku day mar kale.',
     logout: 'Ka bax',
     dishesTotal: (n) => `${n} cunto oo wadar ah`,
+    ordersTab: 'Dalabyada',
+    menuTab: 'Menu',
     totalDishes: 'Wadarta cuntada',
     inStock: 'La heli karo',
     outOfStock: 'Dhammaaday',
