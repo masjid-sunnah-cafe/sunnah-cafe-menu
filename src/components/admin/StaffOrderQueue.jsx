@@ -15,9 +15,9 @@ import { useAdminLang } from '../../lib/adminLang'
 import { Button } from '../ui/button'
 
 const copy = {
-  EN: { empty: 'No active orders', refresh: 'Refresh orders', accept: 'Accept', ready: 'Mark ready', complete: 'Handed over / delivered', cancel: 'Reject / cancel', payment: 'Mark payment received', note: 'Order note', closed: 'Closed', approval_required: 'Approval required', instant: 'Instant orders' },
-  FI: { empty: 'Ei aktiivisia tilauksia', refresh: 'Päivitä tilaukset', accept: 'Hyväksy', ready: 'Merkitse valmiiksi', complete: 'Luovutettu / toimitettu', cancel: 'Hylkää / peruuta', payment: 'Merkitse maksetuksi', note: 'Tilausohje', closed: 'Suljettu', approval_required: 'Vahvistus vaaditaan', instant: 'Pikatilaukset' },
-  SO: { empty: 'Ma jiraan dalabyo firfircoon', refresh: 'Cusboonaysii dalabyada', accept: 'Aqbal', ready: 'Calaamadee diyaar', complete: 'La wareejiyay / la geeyay', cancel: 'Diid / jooji', payment: 'Calaamadee lacagta la helay', note: 'Faahfaahinta dalabka', closed: 'Xiran', approval_required: 'Ansixin ayaa loo baahan yahay', instant: 'Dalabyo degdeg ah' },
+  EN: { empty: 'No active orders', refresh: 'Refresh orders', accept: 'Accept', ready: 'Mark ready', complete: 'Handed over / delivered', cancel: 'Reject / cancel', payment: 'Mark payment received', note: 'Order note', closed: 'Closed', approval_required: 'Approval required' },
+  FI: { empty: 'Ei aktiivisia tilauksia', refresh: 'Päivitä tilaukset', accept: 'Hyväksy', ready: 'Merkitse valmiiksi', complete: 'Luovutettu / toimitettu', cancel: 'Hylkää / peruuta', payment: 'Merkitse maksetuksi', note: 'Tilausohje', closed: 'Suljettu', approval_required: 'Vahvistus vaaditaan' },
+  SO: { empty: 'Ma jiraan dalabyo firfircoon', refresh: 'Cusboonaysii dalabyada', accept: 'Aqbal', ready: 'Calaamadee diyaar', complete: 'La wareejiyay / la geeyay', cancel: 'Diid / jooji', payment: 'Calaamadee lacagta la helay', note: 'Faahfaahinta dalabka', closed: 'Xiran', approval_required: 'Ansixin ayaa loo baahan yahay' },
 }
 
 const nextActions = {
@@ -86,8 +86,8 @@ export default function StaffOrderQueue() {
         </Button>
       </div>
 
-      <div className="mt-4 grid grid-cols-3 gap-2" role="group" aria-label="Ordering mode">
-        {['closed', 'approval_required', 'instant'].map((mode) => (
+      <div className="mt-4 grid grid-cols-2 gap-2" role="group" aria-label="Ordering mode">
+        {['closed', 'approval_required'].map((mode) => (
           <Button
             key={mode}
             type="button"
@@ -119,7 +119,7 @@ export default function StaffOrderQueue() {
             <article key={order.id} className="border border-brand-border border-l-4 border-l-brand-gold bg-white p-4 shadow-sm sm:p-5">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="font-display text-xl font-bold">#{order.orderNumber} · {order.customerFirstName}</p>
+                  <p className="font-display text-xl font-bold">#{order.orderNumber}</p>
                   <p className="mt-1 inline-flex items-center gap-1.5 text-sm text-brand-text-muted">
                     <MapPin size={15} /> {UI.locations[order.fulfillmentLocation][lang]}
                   </p>

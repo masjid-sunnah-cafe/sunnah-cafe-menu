@@ -3,7 +3,7 @@
 create table if not exists public.ordering_settings (
   id          boolean primary key default true check (id),
   mode        text not null default 'approval_required' check (mode in (
-    'closed', 'approval_required', 'instant'
+    'closed', 'approval_required'
   )),
   updated_at  timestamptz not null default now(),
   updated_by  uuid references auth.users (id) on delete set null
@@ -96,7 +96,7 @@ as $$
 declare settings public.ordering_settings;
 begin
   if not public.is_active_staff('staff') then raise exception 'Not authorized'; end if;
-  if target_mode not in ('closed', 'approval_required', 'instant') then raise exception 'Invalid ordering mode'; end if;
+  if target_mode not in ('closed', 'approval_required') then raise exception 'Invalid ordering mode'; end if;
   update public.ordering_settings set mode = target_mode, updated_at = now(), updated_by = auth.uid()
   where id = true returning * into settings;
   return settings;
@@ -136,10 +136,10 @@ begin
   insert into public.orders (status_token_hash, idempotency_key, customer_first_name, fulfillment_location, customer_note, payment_method, payment_status, status, total_cents, expires_at)
   values (
     token_hash, request_id, trim(customer_first_name), fulfillment_location, coalesce(trim(customer_note), ''), payment_method,
-    case when ordering_mode = 'instant' and payment_method = 'sumup_online' then 'pending' else 'unpaid' end,
-    case when ordering_mode = 'approval_required' then 'awaiting_staff_approval' when payment_method = 'sumup_online' then 'awaiting_payment' else 'accepted' end,
+    'unpaid',
+    'awaiting_staff_approval',
     calculated_total,
-    case when ordering_mode = 'approval_required' then now() + interval '10 minutes' when payment_method = 'sumup_online' then now() + interval '10 minutes' else null end
+    now() + interval '10 minutes'
   ) returning * into created_order;
   with requested as (
     select item->>'dishId' as dish_id, sum((item->>'quantity')::integer)::integer as quantity

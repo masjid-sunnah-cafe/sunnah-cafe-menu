@@ -76,7 +76,7 @@ export default function CategoryManager({ categories, dishes, open, onClose, onC
             <div key={category.id} className="flex items-center justify-between gap-3 rounded-xl border border-brand-border bg-brand-bg px-3 py-2.5">
               <div className="min-w-0">
                 <p className="truncate text-sm font-semibold text-brand-text-dark">{category.label.EN}</p>
-                <p className="truncate text-xs text-brand-text-muted">{category.label.FI} / {category.label.SO}</p>
+                <p className="truncate text-xs text-brand-text-muted">{category.label.FI}</p>
               </div>
               <div className="flex shrink-0 gap-1">
                 <Button type="button" variant="ghost" size="icon" onClick={() => startEdit(category)} title={t.editCategory}>
@@ -93,7 +93,7 @@ export default function CategoryManager({ categories, dishes, open, onClose, onC
         <form onSubmit={save} className="mt-5 border-t border-brand-border pt-5">
           <p className="mb-3 text-sm font-semibold text-brand-text-dark">{editing ? t.editCategory : t.addCategory}</p>
           <div className="space-y-3">
-            {['EN', 'FI', 'SO'].map((language) => (
+            {['FI', 'EN'].map((language) => (
               <div key={language}>
                 <Label htmlFor={`category-${language}`}>{t.categoryName} ({language})</Label>
                 <Input

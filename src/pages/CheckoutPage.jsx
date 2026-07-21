@@ -32,7 +32,6 @@ export default function CheckoutPage() {
   const navigate = useNavigate()
   const { items } = useCart()
   const { dishes, loading } = useDishes()
-  const [firstName, setFirstName] = useState('')
   const [location, setLocation] = useState('counter_pickup')
   const [note, setNote] = useState('')
   const [paymentMethod, setPaymentMethod] = useState('sumup_online')
@@ -52,14 +51,13 @@ export default function CheckoutPage() {
 
   async function handleSubmit(event) {
     event.preventDefault()
-    if (!firstName.trim() || rows.length === 0 || submitting || orderingMode === 'closed') return
+    if (rows.length === 0 || submitting || orderingMode === 'closed') return
 
     setSubmitting(true)
     setError('')
     const statusToken = `${crypto.randomUUID()}${crypto.randomUUID()}`
     try {
       const result = await createOrder({
-        customerFirstName: firstName.trim(),
         fulfillmentLocation: location,
         customerNote: note.trim(),
         paymentMethod,
@@ -105,20 +103,6 @@ export default function CheckoutPage() {
         <h1 className="mt-5 font-display text-3xl font-bold">{UI.checkoutTitle[lang]}</h1>
         {orderingMode === 'closed' && <p role="status" className="mt-5 rounded-lg bg-red-50 p-4 text-sm font-bold text-brand-red">{UI.orderingClosed[lang]}</p>}
         {orderingMode === 'approval_required' && <p className="mt-5 rounded-lg bg-brand-gold/10 p-4 text-sm font-bold text-brand-text-dark">{UI.approvalRequired[lang]}</p>}
-
-        <section className="mt-8 border-t border-brand-border pt-6">
-          <h2 className="font-display text-xl font-bold">{UI.customerDetails[lang]}</h2>
-          <label className="mt-4 block text-sm font-bold" htmlFor="first-name">{UI.firstName[lang]}</label>
-          <input
-            id="first-name"
-            value={firstName}
-            onChange={(event) => setFirstName(event.target.value)}
-            maxLength={60}
-            required
-            autoComplete="given-name"
-            className="mt-2 h-12 w-full rounded-lg border border-brand-border bg-brand-card px-4 text-base outline-none focus:border-brand-gold"
-          />
-        </section>
 
         <fieldset className="mt-8 border-t border-brand-border pt-6">
           <legend className="font-display text-xl font-bold">{UI.fulfillmentLocation[lang]}</legend>
@@ -183,7 +167,7 @@ export default function CheckoutPage() {
         {error && <p role="alert" className="mt-5 rounded-lg bg-red-50 p-4 text-sm font-bold text-brand-red">{error}</p>}
 
         <div className="sticky bottom-0 -mx-4 mt-6 border-t border-brand-border bg-brand-bg/95 px-4 py-4 backdrop-blur md:static md:mx-0 md:px-0">
-          <Button type="submit" disabled={submitting || loading || !firstName.trim() || orderingMode === 'closed'} className="h-12 w-full text-base">
+          <Button type="submit" disabled={submitting || loading || orderingMode === 'closed'} className="h-12 w-full text-base">
             {submitting ? UI.submittingOrder[lang] : UI.placeOrder[lang]}
           </Button>
         </div>

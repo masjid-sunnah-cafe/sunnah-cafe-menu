@@ -2,7 +2,6 @@ import { supabase } from '../lib/supabase'
 import type { CartItem, FulfillmentLocation, Order, PaymentMethod } from '../lib/types'
 
 interface CreateOrderInput {
-  customerFirstName: string
   fulfillmentLocation: FulfillmentLocation
   customerNote: string
   paymentMethod: PaymentMethod

@@ -47,7 +47,9 @@ export default function DishDetailSheet({ dish, onClose, lang }) {
           <>
             {/* Brand header bar */}
             <div className="flex items-center gap-2 px-5 pb-3 pt-5 md:px-6 md:pt-6">
-              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-dark font-display text-xs font-bold text-brand-gold">SC</span>
+              <span className="inline-block h-8 w-8 overflow-hidden rounded-full border border-brand-border bg-brand-bg">
+                <img src="/images/sunnah-cafe-logo.png" alt="" className="h-full w-full object-cover" />
+              </span>
               <p className="font-display text-lg font-semibold italic text-brand-text-muted">Sunnah Cafe</p>
             </div>
 
@@ -59,8 +61,8 @@ export default function DishDetailSheet({ dish, onClose, lang }) {
                   alt={getL10n(dish.name, lang)}
                   className="aspect-[4/3] w-full object-cover"
                 />
-                <div className="absolute bottom-3 right-3 flex h-12 w-12 items-center justify-center rounded-full border-2 border-white/60 bg-brand-dark font-display text-sm font-bold text-brand-gold shadow-lg">
-                  SC
+                <div className="absolute bottom-3 right-3 h-12 w-12 overflow-hidden rounded-full border-2 border-white/70 bg-brand-bg shadow-lg">
+                  <img src="/images/sunnah-cafe-logo.png" alt="" className="h-full w-full object-cover" />
                 </div>
               </div>
             </div>

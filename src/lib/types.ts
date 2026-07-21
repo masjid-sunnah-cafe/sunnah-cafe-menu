@@ -89,7 +89,7 @@ export const PAYMENT_STATUSES = [
 ] as const
 export type PaymentStatus = (typeof PAYMENT_STATUSES)[number]
 
-export const ORDERING_MODES = ['closed', 'approval_required', 'instant'] as const
+export const ORDERING_MODES = ['closed', 'approval_required'] as const
 export type OrderingMode = (typeof ORDERING_MODES)[number]
 
 export interface CartItem {

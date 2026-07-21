@@ -19,7 +19,6 @@ interface CartItem {
 }
 
 interface CreateOrderBody {
-  customerFirstName: string
   fulfillmentLocation: string
   customerNote?: string
   paymentMethod: string
@@ -31,9 +30,6 @@ interface CreateOrderBody {
 function validateBody(value: unknown): CreateOrderBody {
   if (!value || typeof value !== 'object') throw new Error('Invalid request body.')
   const body = value as Partial<CreateOrderBody>
-  if (typeof body.customerFirstName !== 'string' || body.customerFirstName.trim().length < 1 || body.customerFirstName.trim().length > 60) {
-    throw new Error('First name is required.')
-  }
   if (typeof body.fulfillmentLocation !== 'string' || !locations.has(body.fulfillmentLocation)) {
     throw new Error('Invalid fulfillment location.')
   }
@@ -77,7 +73,7 @@ Deno.serve(async (request) => {
       auth: { persistSession: false, autoRefreshToken: false },
     })
     const { data: order, error: orderError } = await admin.rpc('create_order_from_menu', {
-      customer_first_name: body.customerFirstName,
+      customer_first_name: 'Order',
       fulfillment_location: body.fulfillmentLocation,
       customer_note: body.customerNote || '',
       payment_method: body.paymentMethod,

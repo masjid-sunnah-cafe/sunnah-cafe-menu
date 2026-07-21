@@ -13,7 +13,7 @@ create table if not exists public.staff_members (
 create table if not exists public.ordering_settings (
   id          boolean primary key default true check (id),
   mode        text not null default 'approval_required' check (mode in (
-    'closed', 'approval_required', 'instant'
+    'closed', 'approval_required'
   )),
   updated_at  timestamptz not null default now(),
   updated_by  uuid references auth.users (id) on delete set null
@@ -235,7 +235,7 @@ begin
     raise exception 'Not authorized';
   end if;
 
-  if target_mode not in ('closed', 'approval_required', 'instant') then
+  if target_mode not in ('closed', 'approval_required') then
     raise exception 'Invalid ordering mode';
   end if;
 
@@ -406,19 +406,11 @@ begin
     coalesce(trim(customer_note), ''),
     payment_method,
     case
-      when ordering_mode = 'instant' and payment_method = 'sumup_online' then 'pending'
-      else 'unpaid'
-    end,
-    case
-      when ordering_mode = 'approval_required' then 'awaiting_staff_approval'
-      when payment_method = 'sumup_online' then 'awaiting_payment'
-      else 'accepted'
-    end,
+      'unpaid',
+    'awaiting_staff_approval',
     calculated_total,
     case
-      when ordering_mode = 'approval_required' then now() + interval '10 minutes'
-      when payment_method = 'sumup_online' then now() + interval '30 minutes'
-      else null
+      now() + interval '10 minutes'
     end
   )
   returning * into created_order;

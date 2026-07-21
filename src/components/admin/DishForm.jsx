@@ -284,13 +284,12 @@ export default function DishForm({ dish, categories, open, onClose, onSaved }) {
 
         <form onSubmit={handleSubmit} className="px-5 pb-8 pt-5 md:px-6">
           {/* Language tabs */}
-          <Tabs defaultValue="EN">
+          <Tabs defaultValue="FI">
             <TabsList className="mb-2">
-              <TabsTrigger value="EN">🇬🇧 {t.tabEnglish}</TabsTrigger>
               <TabsTrigger value="FI">🇫🇮 {t.tabFinnish}</TabsTrigger>
-              <TabsTrigger value="SO">🇸🇴 {t.tabSomali}</TabsTrigger>
+              <TabsTrigger value="EN">🇬🇧 {t.tabEnglish}</TabsTrigger>
             </TabsList>
-            {['EN', 'FI', 'SO'].map(lang => (
+            {['FI', 'EN'].map(lang => (
               <TabsContent key={lang} value={lang}>
                 <LangFields lang={lang} form={form} setField={setField} t={t} />
               </TabsContent>
