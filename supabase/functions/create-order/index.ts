@@ -122,7 +122,7 @@ Deno.serve(async (request) => {
         amount: order.total_cents / 100,
         currency: 'EUR',
         merchant_code: merchantCode!,
-        description: `Sunnah Cafe #${order.order_number}`,
+        description: `Sunnah Cafe #${String(order.ticket_number).padStart(2, '0')}`,
         return_url: `${supabaseUrl}/functions/v1/sumup-webhook`,
         redirect_url: `${publicSiteUrl!.replace(/\/$/, '')}/order/${order.id}#token=${encodeURIComponent(body.statusToken)}`,
         hosted_checkout: { enabled: true },

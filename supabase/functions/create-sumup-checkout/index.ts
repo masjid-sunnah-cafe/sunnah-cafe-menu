@@ -25,7 +25,7 @@ Deno.serve(async (request) => {
     const admin = createClient(supabaseUrl, serviceRoleKey, { auth: { persistSession: false, autoRefreshToken: false } })
     const { data: order, error: orderError } = await admin
       .from('orders')
-      .select('id, order_number, total_cents, expires_at, payment_method, payment_status, status')
+      .select('id, ticket_number, total_cents, expires_at, payment_method, payment_status, status')
       .eq('id', orderId)
       .eq('status_token_hash', await sha256(statusToken))
       .maybeSingle()
@@ -52,7 +52,7 @@ Deno.serve(async (request) => {
         amount: order.total_cents / 100,
         currency: 'EUR',
         merchant_code: merchantCode,
-        description: `Sunnah Cafe #${order.order_number}`,
+        description: `Sunnah Cafe #${String(order.ticket_number).padStart(2, '0')}`,
         return_url: `${supabaseUrl}/functions/v1/sumup-webhook`,
         redirect_url: `${publicSiteUrl.replace(/\/$/, '')}/order/${order.id}#token=${encodeURIComponent(statusToken)}`,
         hosted_checkout: { enabled: true },

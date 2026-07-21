@@ -19,6 +19,20 @@ const ALLERGEN_VARIANT = {
   shared: 'allergen',
 }
 
+function getSpiceLabel(spice, lang) {
+  const label = getL10n(spice, lang)
+  if (lang === 'FI' && label === 'Mieto') return 'Mieto tulisuus'
+  if (lang === 'FI' && label === 'Keskivahva') return 'Keskivahva tulisuus'
+  return label
+}
+
+function getAllergenLabel(allergen, lang) {
+  if (allergen.label.EN === 'May contain dairy') {
+    return lang === 'FI' ? 'Sisältää maitoa' : lang === 'EN' ? 'Contains dairy' : 'Waxa ku jira caano'
+  }
+  return getL10n(allergen.label, lang)
+}
+
 export default function DishDetailSheet({ dish, onClose, lang }) {
   const [quantity, setQuantity] = useState(1)
   const { addItem } = useCart()
@@ -94,10 +108,10 @@ export default function DishDetailSheet({ dish, onClose, lang }) {
                   <div className="mt-2 flex flex-wrap gap-2">
                     {dish.allergens.map((a) => (
                       <Badge
-                        key={getL10n(a.label, lang)}
+                        key={a.label.EN}
                         variant={ALLERGEN_VARIANT[a.color] || 'default'}
                       >
-                        {getL10n(a.label, lang)}
+                        {getAllergenLabel(a, lang)}
                       </Badge>
                     ))}
                   </div>
@@ -113,7 +127,7 @@ export default function DishDetailSheet({ dish, onClose, lang }) {
                 {dish.meta.halal && (
                   <Badge variant="halal">Halal</Badge>
                 )}
-                <Badge variant="meta">{getL10n(dish.meta.spice, lang)}</Badge>
+                {dish.meta.spice && <Badge variant="meta">{getSpiceLabel(dish.meta.spice, lang)}</Badge>}
                 <Badge variant="meta">{getL10n(dish.meta.serves, lang)}</Badge>
               </div>
 

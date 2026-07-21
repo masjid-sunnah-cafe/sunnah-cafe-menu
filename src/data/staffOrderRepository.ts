@@ -11,6 +11,7 @@ function mapOrder(row: any): Order {
   return {
     id: row.id,
     orderNumber: row.order_number,
+    ticketNumber: row.ticket_number,
     customerFirstName: row.customer_first_name,
     fulfillmentLocation: row.fulfillment_location,
     customerNote: row.customer_note,
@@ -36,7 +37,7 @@ export async function getActiveOrders(): Promise<Order[]> {
   const { data, error } = await client
     .from('orders')
     .select(`
-      id, order_number, customer_first_name, fulfillment_location, customer_note,
+      id, order_number, ticket_number, customer_first_name, fulfillment_location, customer_note,
       payment_method, payment_status, status, total_cents, expires_at, created_at, updated_at,
       order_items (dish_id, name, unit_price_cents, quantity, line_total_cents)
     `)

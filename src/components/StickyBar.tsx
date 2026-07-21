@@ -118,7 +118,6 @@ export default function StickyBar({ lang, query, onQuery, categories, activeCate
         onClose={() => setNavOpen(false)}
         lang={lang}
         categories={categories}
-        category={activeCategory}
         activeCategory={activeCategory}
         onCategory={onCategory}
       />

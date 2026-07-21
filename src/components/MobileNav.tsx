@@ -9,7 +9,7 @@ const listVariants = {
 
 const itemVariants = {
   closed: { opacity: 0, x: -16 },
-  open: { opacity: 1, x: 0, transition: { duration: 0.25, ease: 'easeOut' } },
+  open: { opacity: 1, x: 0, transition: { duration: 0.25, ease: 'easeOut' as const } },
 }
 
 export default function MobileNav({ open, onClose, lang, categories, activeCategory, onCategory }) {

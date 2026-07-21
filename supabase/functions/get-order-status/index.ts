@@ -29,6 +29,7 @@ Deno.serve(async (request) => {
       .select(`
         id,
         order_number,
+        ticket_number,
         customer_first_name,
         fulfillment_location,
         customer_note,
@@ -50,6 +51,7 @@ Deno.serve(async (request) => {
     return jsonResponse({
       id: order.id,
       orderNumber: order.order_number,
+      ticketNumber: order.ticket_number,
       customerFirstName: order.customer_first_name,
       fulfillmentLocation: order.fulfillment_location,
       customerNote: order.customer_note,

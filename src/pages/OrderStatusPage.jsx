@@ -90,7 +90,7 @@ export default function OrderStatusPage() {
         <header className="mt-5 flex items-start justify-between gap-4">
           <div>
             <h1 className="font-display text-3xl font-bold">{UI.orderStatusTitle[lang]}</h1>
-            {order && <p className="mt-1 text-brand-text-muted">{UI.orderNumber[lang]} #{order.orderNumber}</p>}
+            {order && <p className="mt-1 text-brand-text-muted">{UI.orderNumber[lang]} #{String(order.ticketNumber).padStart(2, '0')}</p>}
           </div>
           <Button type="button" variant="outline" size="icon" onClick={refresh} disabled={refreshing} title={UI.orderStatusTitle[lang]}>
             <RefreshCw className={refreshing ? 'animate-spin' : ''} size={18} aria-hidden="true" />

@@ -163,7 +163,7 @@ export const dishes = [
       SO: ['Digirta', 'Subag', 'Sonkor', 'Saliid macsar']
     },
     allergens: [
-      { label: { EN: 'May contain dairy', FI: 'Saattaa sisältää maitoa', SO: 'Waxa laga yaabaa inuu leeyahay caano' }, color: 'dairy' },
+      { label: { EN: 'Contains dairy', FI: 'Sisältää maitoa', SO: 'Waxa ku jira caano' }, color: 'dairy' },
     ],
     meta: {
       halal: true,
@@ -239,7 +239,7 @@ export const dishes = [
       SO: ['Shaah madow', 'Hayl', 'Qorfe', 'Caano', 'Sonkor']
     },
     allergens: [
-      { label: { EN: 'May contain dairy', FI: 'Saattaa sisältää maitoa', SO: 'Caano' }, color: 'dairy' },
+      { label: { EN: 'Contains dairy', FI: 'Sisältää maitoa', SO: 'Waxa ku jira caano' }, color: 'dairy' },
     ],
     meta: {
       halal: true,

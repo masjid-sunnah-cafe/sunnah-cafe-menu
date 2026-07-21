@@ -17,17 +17,18 @@ import { toast } from 'sonner'
 // ── Predefined allergen presets ───────────────────────────────────────────────
 const ALLERGEN_PRESETS = [
   { key: 'wheat',  label: { EN: 'Gluten (wheat)', FI: 'Gluteeni (vehnä)', SO: 'Gluten (qamadi)' }, color: 'wheat' },
-  { key: 'dairy',  label: { EN: 'May contain dairy', FI: 'Saattaa sisältää maitoa', SO: 'Waxa laga yaabaa inuu leeyahay caano' }, color: 'dairy' },
+  { key: 'dairy',  label: { EN: 'Contains dairy', FI: 'Sisältää maitoa', SO: 'Waxa ku jira caano' }, color: 'dairy' },
   { key: 'lactose-free', label: { EN: 'Lactose-free', FI: 'Laktoositon', SO: 'Aan lahayn laktoos' }, color: 'dairy' },
   { key: 'nuts',   label: { EN: 'May contain nuts', FI: 'Saattaa sisältää pähkinöitä', SO: 'Waxa laga yaabaa inuu leeyahay kaad' }, color: 'shared' },
   { key: 'eggs',   label: { EN: 'Contains eggs', FI: 'Sisältää munia', SO: 'Waxaa ku jira ukun' }, color: 'shared' },
 ]
 
-const SPICE_OPTIONS = {
-  EN: ['Mild spice', 'Medium spice', 'Hot spice'],
-  FI: ['Mieto', 'Keskivahva', 'Tulinen'],
-  SO: ['Aad u yar', 'Dhexdhexaad', 'Kulul'],
-}
+const SPICE_OPTIONS = [
+  { key: 'none', EN: 'No spice label', FI: 'Ei tulisuusmerkintää', SO: 'Calaamad basbaas ma leh' },
+  { key: 'mild', EN: 'Mild spice', FI: 'Mieto tulisuus', SO: 'Basbaas yar' },
+  { key: 'medium', EN: 'Medium spice', FI: 'Keskivahva tulisuus', SO: 'Basbaas keskitaso ah' },
+  { key: 'hot', EN: 'Hot spice', FI: 'Tulinen', SO: 'Aad u kulul' },
+]
 
 const SERVES_OPTIONS = {
   EN: ['Serves 1', 'Serves 2', 'Serves 3–4'],
@@ -50,7 +51,7 @@ function empty(categories) {
     allergens:       [],
     meta: {
       halal:  true,
-      spice:  { EN: 'Mild spice', FI: 'Mieto', SO: 'Aad u yar' },
+      spice:  { EN: 'Mild spice', FI: 'Mieto tulisuus', SO: 'Basbaas yar' },
       serves: { EN: 'Serves 1', FI: '1 hengelle', SO: '1 qof' },
     },
   }
@@ -75,7 +76,7 @@ function dishToForm(dish) {
     allergens:       dish.allergens ? JSON.parse(JSON.stringify(dish.allergens)) : [],
     meta: {
       halal:  dish.meta?.halal ?? true,
-      spice:  { ...dish.meta?.spice  } || { EN: 'Mild spice', FI: 'Mieto', SO: 'Aad u yar' },
+      spice:  dish.meta?.spice ? { ...dish.meta.spice } : null,
       serves: { ...dish.meta?.serves } || { EN: 'Serves 1', FI: '1 hengelle', SO: '1 qof' },
     },
   }
@@ -83,7 +84,12 @@ function dishToForm(dish) {
 
 // ── Language-specific fields component ───────────────────────────────────────
 function LangFields({ lang, form, setField, t }) {
-  const spiceIdx  = SPICE_OPTIONS.EN.indexOf(form.meta.spice.EN)
+  const spiceOption = SPICE_OPTIONS.find((option) => (
+    option.EN === form.meta.spice?.EN
+    || option.FI === form.meta.spice?.FI
+    || (option.key === 'mild' && form.meta.spice?.FI === 'Mieto')
+    || (option.key === 'medium' && form.meta.spice?.FI === 'Keskivahva')
+  )) || SPICE_OPTIONS[0]
   const servesIdx = SERVES_OPTIONS.EN.indexOf(form.meta.serves.EN)
 
   return (
@@ -135,19 +141,25 @@ function LangFields({ lang, form, setField, t }) {
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <Label htmlFor={`spice-${lang}`}>{t.fSpice} *</Label>
+          <Label htmlFor={`spice-${lang}`}>{t.fSpice}</Label>
           <select
             id={`spice-${lang}`}
             className="mt-1 h-10 w-full rounded-xl border border-brand-border bg-white px-3 text-sm text-brand-text-dark focus:outline-none focus:ring-2 focus:ring-brand-gold"
-            value={form.meta.spice[lang]}
+            value={spiceOption.key}
             onChange={e => {
-              const idx = SPICE_OPTIONS[lang].indexOf(e.target.value)
-              setField('meta.spice', 'EN', SPICE_OPTIONS.EN[idx])
-              setField('meta.spice', 'FI', SPICE_OPTIONS.FI[idx])
-              setField('meta.spice', 'SO', SPICE_OPTIONS.SO[idx])
+              const option = SPICE_OPTIONS.find((item) => item.key === e.target.value)
+              setForm((current) => ({
+                ...current,
+                meta: {
+                  ...current.meta,
+                  spice: option?.key === 'none'
+                    ? null
+                    : { EN: option.EN, FI: option.FI, SO: option.SO },
+                },
+              }))
             }}
           >
-            {SPICE_OPTIONS[lang].map(o => <option key={o} value={o}>{o}</option>)}
+            {SPICE_OPTIONS.map((option) => <option key={option.key} value={option.key}>{option[lang]}</option>)}
           </select>
         </div>
         <div>
@@ -204,11 +216,16 @@ export default function DishForm({ dish, categories, open, onClose, onSaved }) {
 
   function toggleAllergen(preset) {
     setForm(prev => {
-      const exists = prev.allergens.some(a => a.color === preset.color && a.label.EN === preset.label.EN)
+      const matchesPreset = (allergen) => (
+        allergen.color === preset.color
+        && (allergen.label.EN === preset.label.EN
+          || (preset.key === 'dairy' && allergen.label.EN === 'May contain dairy'))
+      )
+      const exists = prev.allergens.some(matchesPreset)
       return {
         ...prev,
         allergens: exists
-          ? prev.allergens.filter(a => !(a.color === preset.color && a.label.EN === preset.label.EN))
+          ? prev.allergens.filter((allergen) => !matchesPreset(allergen))
           : [...prev.allergens, { label: preset.label, color: preset.color }],
       }
     })
@@ -372,7 +389,10 @@ export default function DishForm({ dish, categories, open, onClose, onSaved }) {
             <Label>{t.fAllergens}</Label>
             <div className="mt-2 flex flex-wrap gap-2">
               {ALLERGEN_PRESETS.map(p => {
-                const active = form.allergens.some(a => a.label.EN === p.label.EN)
+                const active = form.allergens.some((allergen) => (
+                  allergen.label.EN === p.label.EN
+                  || (p.key === 'dairy' && allergen.label.EN === 'May contain dairy')
+                ))
                 return (
                   <button
                     key={p.key}

@@ -25,7 +25,7 @@ export interface Allergen {
 /** "Good to know" metadata shown in the dish detail sheet. */
 export interface DishMeta {
   halal: boolean
-  spice: Localized
+  spice: Localized | null
   serves: Localized
 }
 
@@ -108,6 +108,7 @@ export interface OrderItemSnapshot {
 export interface Order {
   id: string
   orderNumber: number
+  ticketNumber: number
   customerFirstName: string
   fulfillmentLocation: FulfillmentLocation
   customerNote: string

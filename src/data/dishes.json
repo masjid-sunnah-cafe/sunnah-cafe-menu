@@ -105,7 +105,7 @@
       "SO": ["Digirta", "Subag", "Sonkor", "Saliid macsar"]
     },
     "allergens": [
-      { "label": { "EN": "May contain dairy", "FI": "Saattaa sisältää maitoa", "SO": "Waxa laga yaabaa inuu leeyahay caano" }, "color": "dairy" }
+      { "label": { "EN": "Contains dairy", "FI": "Sisältää maitoa", "SO": "Waxa ku jira caano" }, "color": "dairy" }
     ],
     "meta": {
       "halal": true,
@@ -220,7 +220,7 @@
     },
     "allergens": [
       { "label": { "EN": "Gluten (wheat)", "FI": "Gluteeni (vehnä)", "SO": "Gluten (qamadi)" }, "color": "wheat" },
-      { "label": { "EN": "May contain dairy", "FI": "Saattaa sisältää maitoa", "SO": "Waxa laga yaabaa inuu leeyahay caano" }, "color": "dairy" }
+      { "label": { "EN": "Contains dairy", "FI": "Sisältää maitoa", "SO": "Waxa ku jira caano" }, "color": "dairy" }
     ],
     "meta": {
       "halal": true,
@@ -258,7 +258,7 @@
       "SO": ["Shaah madow", "Hayl", "Qorfe", "Caano", "Sonkor"]
     },
     "allergens": [
-      { "label": { "EN": "May contain dairy", "FI": "Saattaa sisältää maitoa", "SO": "Caano" }, "color": "dairy" }
+      { "label": { "EN": "Contains dairy", "FI": "Sisältää maitoa", "SO": "Waxa ku jira caano" }, "color": "dairy" }
     ],
     "meta": {
       "halal": true,

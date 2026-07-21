@@ -64,7 +64,7 @@ export const UI = {
   },
   cardDeliveredHelp: { EN: 'A staff member brings the SumUp card reader with your order.', FI: 'Työntekijä tuo SumUp-korttikoneen tilauksen mukana.', SO: 'Shaqaale ayaa qalabka kaarka SumUp la imanaya dalabka.' },
   orderStatusTitle: { EN: 'Order status', FI: 'Tilauksen tila', SO: 'Xaaladda dalabka' },
-  orderNumber: { EN: 'Order', FI: 'Tilaus', SO: 'Dalab' },
+  orderNumber: { EN: 'Order number', FI: 'Tilausnumero', SO: 'Lambarka dalabka' },
   orderStatusMissing: { EN: 'This order cannot be opened on this device.', FI: 'Tätä tilausta ei voi avata tällä laitteella.', SO: 'Dalabkan lagama furi karo qalabkan.' },
   orderStatusFailed: { EN: 'Could not update the order status.', FI: 'Tilauksen tilaa ei voitu päivittää.', SO: 'Xaaladda dalabka lama cusboonaysiin karin.' },
   orderStatuses: {

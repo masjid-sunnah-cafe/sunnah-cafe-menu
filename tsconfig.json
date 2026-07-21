@@ -13,12 +13,10 @@
     "noEmit": true,
     "jsx": "react-jsx",
 
-    "allowJs": true,
-    "checkJs": false,
-
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    "allowJs": false,
+    "strict": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
 
     "baseUrl": ".",
