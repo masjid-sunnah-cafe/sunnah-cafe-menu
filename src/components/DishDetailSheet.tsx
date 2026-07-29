@@ -35,14 +35,34 @@ function getAllergenLabel(allergen, lang) {
 
 export default function DishDetailSheet({ dish, onClose, lang }) {
   const [quantity, setQuantity] = useState(1)
+  const [selectedOptions, setSelectedOptions] = useState({})
   const { addItem } = useCart()
+
+  const optionGroups = dish?.meta.optionGroups?.filter((group) => group.options.length > 0) || []
+  const selections = optionGroups.flatMap((group) => {
+    const option = group.options.find((item) => item.id === selectedOptions[group.id] && item.inStock)
+    return option ? [{
+      groupId: group.id,
+      groupLabel: group.label,
+      optionId: option.id,
+      optionLabel: option.label,
+      priceAdjustmentCents: option.priceAdjustmentCents || 0,
+    }] : []
+  })
+  const missingRequiredSelection = optionGroups.some((group) => (
+    group.required && !selections.some((selection) => selection.groupId === group.id)
+  ))
+  const optionPriceAdjustment = selections.reduce((total, selection) => total + selection.priceAdjustmentCents, 0) / 100
+  const unitPrice = dish ? dish.price + optionPriceAdjustment : 0
 
   useEffect(() => {
     setQuantity(1)
+    setSelectedOptions({})
   }, [dish?.id])
 
   function handleAddToCart() {
-    addItem(dish.id, quantity)
+    if (missingRequiredSelection) return
+    addItem(dish.id, quantity, selections)
     onClose()
   }
 
@@ -89,7 +109,7 @@ export default function DishDetailSheet({ dish, onClose, lang }) {
                   {getL10n(dish.name, lang)}
                 </h2>
                 <span className="whitespace-nowrap rounded-xl bg-brand-gold/20 px-3 py-1 font-display text-lg font-bold text-brand-gold md:text-xl">
-                  {formatPrice(dish.price)}
+                  {formatPrice(unitPrice)}
                 </span>
               </div>
 
@@ -131,6 +151,39 @@ export default function DishDetailSheet({ dish, onClose, lang }) {
                 <Badge variant="meta">{getL10n(dish.meta.serves, lang)}</Badge>
               </div>
 
+              {optionGroups.length > 0 && (
+                <>
+                  <Separator className="mt-6" />
+                  <div className="mt-4 space-y-4">
+                    {optionGroups.map((group) => {
+                      const availableOptions = group.options.filter((option) => option.inStock)
+                      return (
+                        <div key={group.id}>
+                          <label className="text-sm font-bold text-brand-text-dark" htmlFor={`option-${group.id}`}>
+                            {getL10n(group.label, lang)} {group.required && <span className="text-brand-red">*</span>}
+                          </label>
+                          <select
+                            id={`option-${group.id}`}
+                            value={selectedOptions[group.id] || ''}
+                            onChange={(event) => setSelectedOptions((current) => ({ ...current, [group.id]: event.target.value }))}
+                            className="mt-2 h-11 w-full rounded-lg border border-brand-border bg-brand-card px-3 text-sm text-brand-text-dark"
+                            required={group.required}
+                          >
+                            <option value="">{lang === 'FI' ? 'Valitse vaihtoehto' : 'Choose an option'}</option>
+                            {availableOptions.map((option) => (
+                              <option key={option.id} value={option.id}>
+                                {getL10n(option.label, lang)}
+                                {(option.priceAdjustmentCents || 0) > 0 ? ` (+${formatPrice(option.priceAdjustmentCents / 100)})` : ''}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </>
+              )}
+
               <div className="mt-8 flex h-12 items-center justify-between rounded-xl border border-brand-border bg-brand-bg px-1">
                 <button
                   type="button"
@@ -154,12 +207,12 @@ export default function DishDetailSheet({ dish, onClose, lang }) {
               <Button
                 type="button"
                 onClick={handleAddToCart}
-                disabled={!dish.inStock}
+                disabled={!dish.inStock || missingRequiredSelection}
                 variant="default"
                 className="mt-3 h-12 w-full gap-2 rounded-xl text-sm tracking-wide md:text-base"
               >
                 <ShoppingBag size={18} aria-hidden="true" />
-                {UI.addToCart[lang]} · {formatPrice(dish.price * quantity)}
+                {UI.addToCart[lang]} · {formatPrice(unitPrice * quantity)}
               </Button>
             </div>
           </>

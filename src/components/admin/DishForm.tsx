@@ -54,6 +54,7 @@ function empty(categories) {
       halal:  true,
       spice:  { EN: 'Mild spice', FI: 'Mieto tulisuus' },
       serves: { EN: 'Serves 1', FI: '1 hengelle' },
+      optionGroups: [],
     },
   }
 }
@@ -78,6 +79,7 @@ function dishToForm(dish) {
       halal:  dish.meta?.halal ?? true,
       spice:  dish.meta?.spice ? { ...dish.meta.spice } : null,
       serves: dish.meta?.serves ? { ...dish.meta.serves } : { EN: 'Serves 1', FI: '1 hengelle' },
+      optionGroups: dish.meta?.optionGroups ? JSON.parse(JSON.stringify(dish.meta.optionGroups)) : [],
     },
   }
 }
@@ -230,6 +232,61 @@ export default function DishForm({ dish, categories, open, onClose, onSaved }) {
     })
   }
 
+  function addOptionGroup() {
+    setForm((current) => ({
+      ...current,
+      meta: {
+        ...current.meta,
+        optionGroups: [...current.meta.optionGroups, {
+          id: `option-group-${Date.now()}`,
+          label: { FI: '', EN: '' },
+          required: true,
+          options: [],
+        }],
+      },
+    }))
+  }
+
+  function updateOptionGroup(groupId, patch) {
+    setForm((current) => ({
+      ...current,
+      meta: {
+        ...current.meta,
+        optionGroups: current.meta.optionGroups.map((group) => (
+          group.id === groupId ? { ...group, ...patch } : group
+        )),
+      },
+    }))
+  }
+
+  function removeOptionGroup(groupId) {
+    setForm((current) => ({
+      ...current,
+      meta: {
+        ...current.meta,
+        optionGroups: current.meta.optionGroups.filter((group) => group.id !== groupId),
+      },
+    }))
+  }
+
+  function addOption(groupId) {
+    const option = { id: `option-${Date.now()}`, label: { FI: '', EN: '' }, inStock: true, priceAdjustmentCents: 0 }
+    const group = form.meta.optionGroups.find((item) => item.id === groupId)
+    updateOptionGroup(groupId, { options: [...group.options, option] })
+  }
+
+  function updateOption(groupId, optionId, patch) {
+    const group = form.meta.optionGroups.find((item) => item.id === groupId)
+    updateOptionGroup(groupId, {
+      options: group.options.map((option) => option.id === optionId ? { ...option, ...patch } : option),
+    })
+  }
+
+  function removeOption(groupId, optionId) {
+    const group = form.meta.optionGroups.find((item) => item.id === groupId)
+    updateOptionGroup(groupId, { options: group.options.filter((option) => option.id !== optionId) })
+  }
+
   async function handleImageUpload(e) {
     const file = e.target.files?.[0]
     if (!file) return
@@ -268,6 +325,7 @@ export default function DishForm({ dish, categories, open, onClose, onSaved }) {
           halal:  form.meta.halal,
           spice:  form.meta.spice,
           serves: form.meta.serves,
+          optionGroups: form.meta.optionGroups,
         },
       }
       const saved = isEdit
@@ -402,6 +460,94 @@ export default function DishForm({ dish, categories, open, onClose, onSaved }) {
                   </button>
                 )
               })}
+            </div>
+          </div>
+
+          <div className="mt-6 border-t border-brand-border pt-5">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <h3 className="text-sm font-bold text-brand-text-dark">{t.optionGroups}</h3>
+                <p className="mt-0.5 text-xs text-brand-text-muted">{t.optionGroupsHint}</p>
+              </div>
+              <Button type="button" variant="outline" size="sm" onClick={addOptionGroup} className="gap-1.5">
+                <Plus className="h-4 w-4" /> {t.addOptionGroup}
+              </Button>
+            </div>
+
+            <div className="mt-4 space-y-4">
+              {form.meta.optionGroups.map((group) => (
+                <div key={group.id} className="rounded-lg border border-brand-border bg-brand-bg p-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-sm font-semibold text-brand-text-dark">{t.optionGroup}</p>
+                    <button type="button" onClick={() => removeOptionGroup(group.id)} className="grid h-8 w-8 place-items-center rounded-md text-brand-red" title={t.removeOptionGroup}>
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                  <div className="mt-3 grid grid-cols-2 gap-3">
+                    {['FI', 'EN'].map((lang) => (
+                      <div key={lang}>
+                        <Label htmlFor={`${group.id}-${lang}`}>{t.optionGroupName} ({lang})</Label>
+                        <Input
+                          id={`${group.id}-${lang}`}
+                          className="mt-1"
+                          value={group.label[lang]}
+                          onChange={(event) => updateOptionGroup(group.id, { label: { ...group.label, [lang]: event.target.value } })}
+                          placeholder={t.optionGroupNamePlaceholder[lang]}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-3 flex items-center justify-between rounded-md bg-white px-3 py-2">
+                    <div>
+                      <p className="text-sm font-semibold text-brand-text-dark">{t.requiredOption}</p>
+                      <p className="text-xs text-brand-text-muted">{t.requiredOptionHint}</p>
+                    </div>
+                    <Switch checked={group.required} onCheckedChange={(required) => updateOptionGroup(group.id, { required })} />
+                  </div>
+
+                  <div className="mt-3 space-y-2">
+                    {group.options.map((option) => (
+                      <div key={option.id} className="grid grid-cols-2 items-end gap-2 sm:grid-cols-[1fr_1fr_100px_auto_auto]">
+                        {['FI', 'EN'].map((lang) => (
+                          <div key={lang}>
+                            <Label htmlFor={`${option.id}-${lang}`} className="text-xs">{t.optionName} ({lang})</Label>
+                            <Input
+                              id={`${option.id}-${lang}`}
+                              className="mt-1"
+                              value={option.label[lang]}
+                              onChange={(event) => updateOption(group.id, option.id, { label: { ...option.label, [lang]: event.target.value } })}
+                            />
+                          </div>
+                        ))}
+                        <div>
+                          <Label htmlFor={`${option.id}-price`} className="text-xs">{t.optionPriceAdjustment}</Label>
+                          <Input
+                            id={`${option.id}-price`}
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            className="mt-1"
+                            value={(option.priceAdjustmentCents ?? 0) / 100}
+                            onChange={(event) => updateOption(group.id, option.id, {
+                              priceAdjustmentCents: Math.max(0, Math.round(Number(event.target.value || 0) * 100)),
+                            })}
+                          />
+                        </div>
+                        <div className="pb-1 text-center">
+                          <Label className="text-xs">{t.optionInStock}</Label>
+                          <Switch className="mt-2" checked={option.inStock} onCheckedChange={(inStock) => updateOption(group.id, option.id, { inStock })} />
+                        </div>
+                        <button type="button" onClick={() => removeOption(group.id, option.id)} className="mb-0.5 grid h-10 w-10 place-items-center rounded-md border border-brand-border text-brand-red" title={t.removeOption}>
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                  <Button type="button" variant="outline" size="sm" className="mt-3 gap-1.5" onClick={() => addOption(group.id)}>
+                    <Plus className="h-4 w-4" /> {t.addOption}
+                  </Button>
+                </div>
+              ))}
             </div>
           </div>
 

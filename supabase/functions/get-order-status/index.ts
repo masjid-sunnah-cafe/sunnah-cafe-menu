@@ -40,7 +40,7 @@ Deno.serve(async (request) => {
         expires_at,
         created_at,
         updated_at,
-        order_items (dish_id, name, unit_price_cents, quantity, line_total_cents)
+        order_items (dish_id, name, selections, unit_price_cents, quantity, line_total_cents)
       `)
       .eq('id', orderId)
       .eq('status_token_hash', await sha256(statusToken))
@@ -65,6 +65,7 @@ Deno.serve(async (request) => {
       items: order.order_items.map((item) => ({
         dishId: item.dish_id,
         name: item.name,
+        selections: item.selections || [],
         unitPriceCents: item.unit_price_cents,
         quantity: item.quantity,
         lineTotalCents: item.line_total_cents,

@@ -16,6 +16,10 @@ const paymentMethods = new Set([
 interface CartItem {
   dishId: string
   quantity: number
+  selections?: Array<{
+    groupId: string
+    optionId: string
+  }>
 }
 
 interface CreateOrderBody {
@@ -40,7 +44,20 @@ function validateBody(value: unknown): CreateOrderBody {
     throw new Error('Order note is too long.')
   }
   if (!Array.isArray(body.items) || body.items.length < 1 || body.items.length > 50 || body.items.some((item) => (
-    typeof item?.dishId !== 'string' || !Number.isInteger(item?.quantity) || item.quantity < 1 || item.quantity > 99
+    typeof item?.dishId !== 'string'
+    || !Number.isInteger(item?.quantity)
+    || item.quantity < 1
+    || item.quantity > 99
+    || (item.selections != null && (!Array.isArray(item.selections)
+      || item.selections.length > 20
+      || item.selections.some((selection) => (
+        typeof selection?.groupId !== 'string'
+        || selection.groupId.length < 1
+        || selection.groupId.length > 100
+        || typeof selection?.optionId !== 'string'
+        || selection.optionId.length < 1
+        || selection.optionId.length > 100
+      ))))
   ))) {
     throw new Error('Invalid cart.')
   }

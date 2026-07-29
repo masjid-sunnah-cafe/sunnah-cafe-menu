@@ -26,6 +26,7 @@ function mapOrder(row: any): Order {
     items: (row.order_items || []).map((item: any) => ({
       dishId: item.dish_id,
       name: item.name,
+      selections: item.selections || [],
       unitPriceCents: item.unit_price_cents,
       quantity: item.quantity,
       lineTotalCents: item.line_total_cents,
@@ -40,7 +41,7 @@ export async function getActiveOrders(): Promise<Order[]> {
     .select(`
       id, order_number, ticket_date, ticket_number, customer_first_name, fulfillment_location, customer_note,
       payment_method, payment_status, status, total_cents, expires_at, created_at, updated_at,
-      order_items (dish_id, name, unit_price_cents, quantity, line_total_cents)
+      order_items (dish_id, name, selections, unit_price_cents, quantity, line_total_cents)
     `)
     .not('status', 'in', '(completed,cancelled,expired)')
     .order('created_at', { ascending: true })
@@ -56,7 +57,7 @@ export async function getOrderHistory(ticketDate?: string, status?: 'completed' 
     .select(`
       id, order_number, ticket_date, ticket_number, customer_first_name, fulfillment_location, customer_note,
       payment_method, payment_status, status, total_cents, expires_at, created_at, updated_at,
-      order_items (dish_id, name, unit_price_cents, quantity, line_total_cents)
+      order_items (dish_id, name, selections, unit_price_cents, quantity, line_total_cents)
     `)
     .in('status', status ? [status] : ['completed', 'cancelled', 'expired'])
     .order('created_at', { ascending: false })

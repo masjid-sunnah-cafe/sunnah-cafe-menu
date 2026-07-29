@@ -16,7 +16,9 @@ export default function CartPage({ lang = 'FI' }) {
     const dish = dishes.find((candidate) => candidate.id === item.dishId)
     return dish ? [{ ...item, dish }] : []
   })
-  const total = rows.reduce((sum, row) => sum + row.dish.price * row.quantity, 0)
+  const total = rows.reduce((sum, row) => (
+    sum + (row.dish.price + row.selections.reduce((extra, selection) => extra + selection.priceAdjustmentCents, 0) / 100) * row.quantity
+  ), 0)
 
   return (
     <main className="min-h-screen bg-brand-bg px-4 py-6 text-brand-text-dark md:px-6 md:py-10">
@@ -46,8 +48,10 @@ export default function CartPage({ lang = 'FI' }) {
         ) : (
           <>
             <div className="divide-y divide-brand-border">
-              {rows.map(({ dish, quantity }) => (
-                <article key={dish.id} className="grid grid-cols-[72px_1fr_auto] gap-3 py-5 md:grid-cols-[88px_1fr_auto]">
+              {rows.map(({ dish, quantity, key, selections }) => {
+                const unitPrice = dish.price + selections.reduce((sum, selection) => sum + selection.priceAdjustmentCents, 0) / 100
+                return (
+                <article key={key} className="grid grid-cols-[72px_1fr_auto] gap-3 py-5 md:grid-cols-[88px_1fr_auto]">
                   <img
                     src={dish.image}
                     alt=""
@@ -55,11 +59,17 @@ export default function CartPage({ lang = 'FI' }) {
                   />
                   <div className="min-w-0">
                     <h2 className="font-display text-lg font-bold leading-tight">{getL10n(dish.name, currentLang)}</h2>
-                    <p className="mt-1 font-bold text-brand-gold">{formatPrice(dish.price * quantity)}</p>
+                    {selections.map((selection) => (
+                      <p key={selection.groupId} className="mt-1 text-sm text-brand-text-muted">
+                        {getL10n(selection.groupLabel, currentLang)}: {getL10n(selection.optionLabel, currentLang)}
+                        {selection.priceAdjustmentCents > 0 && ` (+${formatPrice(selection.priceAdjustmentCents / 100)})`}
+                      </p>
+                    ))}
+                    <p className="mt-1 font-bold text-brand-gold">{formatPrice(unitPrice * quantity)}</p>
                     <div className="mt-3 flex h-11 w-fit items-center rounded-lg border border-brand-border bg-brand-card">
                       <button
                         type="button"
-                        onClick={() => setQuantity(dish.id, quantity - 1)}
+                        onClick={() => setQuantity(key, quantity - 1)}
                         aria-label={UI.decreaseQuantity[currentLang]}
                         className="grid h-11 w-11 place-items-center"
                       >
@@ -68,7 +78,7 @@ export default function CartPage({ lang = 'FI' }) {
                       <span className="w-9 text-center font-bold" aria-live="polite">{quantity}</span>
                       <button
                         type="button"
-                        onClick={() => setQuantity(dish.id, quantity + 1)}
+                        onClick={() => setQuantity(key, quantity + 1)}
                         aria-label={UI.increaseQuantity[currentLang]}
                         className="grid h-11 w-11 place-items-center"
                       >
@@ -78,14 +88,15 @@ export default function CartPage({ lang = 'FI' }) {
                   </div>
                   <button
                     type="button"
-                    onClick={() => removeItem(dish.id)}
+                    onClick={() => removeItem(key)}
                     aria-label={UI.removeItem[currentLang]}
                     className="grid h-11 w-11 place-items-center text-brand-red"
                   >
                     <Trash2 size={19} aria-hidden="true" />
                   </button>
                 </article>
-              ))}
+                )
+              })}
             </div>
             <div className="sticky bottom-0 -mx-4 border-t border-brand-border bg-brand-bg/95 px-4 py-4 backdrop-blur md:static md:mx-0 md:mt-5 md:px-0">
               <div className="mb-4 flex items-center justify-between font-display text-xl font-bold">

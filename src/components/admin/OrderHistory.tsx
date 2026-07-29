@@ -82,7 +82,19 @@ export default function OrderHistory() {
               <span className="rounded-full bg-[#F7E8D5] px-3 py-1 text-xs font-bold text-brand-dark">{UI.orderStatuses[order.status][lang]}</span>
             </div>
             <div className="mt-4 space-y-2 border-y border-brand-border py-3 text-sm">
-              {order.items.map((item) => <div key={item.dishId} className="flex justify-between gap-4"><span>{item.quantity} x {getL10n(item.name, lang)}</span><span className="font-bold">{formatPrice(item.lineTotalCents / 100)}</span></div>)}
+              {order.items.map((item, index) => (
+                <div key={`${item.dishId}-${index}`} className="flex justify-between gap-4">
+                  <span>
+                    {item.quantity} x {getL10n(item.name, lang)}
+                    {item.selections?.map((selection) => (
+                      <span key={selection.groupId} className="block text-brand-text-muted">
+                        {getL10n(selection.groupLabel, lang)}: {getL10n(selection.optionLabel, lang)}
+                      </span>
+                    ))}
+                  </span>
+                  <span className="font-bold">{formatPrice(item.lineTotalCents / 100)}</span>
+                </div>
+              ))}
               <div className="flex justify-between pt-2 font-display font-bold"><span>{UI.total[lang]}</span><span>{formatPrice(order.totalCents / 100)}</span></div>
             </div>
             <div className="mt-3 flex items-center gap-2 text-sm font-bold text-brand-text-muted">

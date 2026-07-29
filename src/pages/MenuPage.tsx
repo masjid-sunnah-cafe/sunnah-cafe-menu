@@ -62,6 +62,7 @@ export default function MenuPage() {
 
   const filteredDishes = useMemo(() => {
     const q = query.trim().toLowerCase()
+    const categoryOrder = new Map(categories.map((category) => [category.id, category.sortOrder]))
     return dishes.filter((d) => {
       // When searching, look across every category; otherwise respect the tab.
       if (!q && activeCategory !== 'all' && d.category !== activeCategory) return false
@@ -75,8 +76,13 @@ export default function MenuPage() {
         .join(' ')
         .toLowerCase()
       return haystack.includes(q)
+    }).sort((left, right) => {
+      const categoryDifference = (categoryOrder.get(left.category) ?? Number.MAX_SAFE_INTEGER)
+        - (categoryOrder.get(right.category) ?? Number.MAX_SAFE_INTEGER)
+      if (categoryDifference !== 0) return categoryDifference
+      return (left.sortOrder ?? 0) - (right.sortOrder ?? 0)
     })
-  }, [dishes, activeCategory, query, lang])
+  }, [dishes, categories, activeCategory, query, lang])
 
   const activeCategoryLabel = useMemo(
     () =>

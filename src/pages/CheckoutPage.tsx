@@ -48,7 +48,9 @@ export default function CheckoutPage() {
     const dish = dishes.find((candidate) => candidate.id === item.dishId)
     return dish ? [{ ...item, dish }] : []
   })
-  const total = rows.reduce((sum, row) => sum + row.dish.price * row.quantity, 0)
+  const total = rows.reduce((sum, row) => (
+    sum + (row.dish.price + row.selections.reduce((extra, selection) => extra + selection.priceAdjustmentCents, 0) / 100) * row.quantity
+  ), 0)
 
   async function handleSubmit(event) {
     event.preventDefault()
@@ -62,7 +64,7 @@ export default function CheckoutPage() {
         fulfillmentLocation: location,
         customerNote: note.trim(),
         paymentMethod,
-        items: rows.map((row) => ({ dishId: row.dishId, quantity: row.quantity })),
+        items: rows.map((row) => ({ dishId: row.dishId, quantity: row.quantity, selections: row.selections })),
         idempotencyKey: crypto.randomUUID(),
         statusToken,
       })
@@ -153,9 +155,17 @@ export default function CheckoutPage() {
           <h2 className="font-display text-xl font-bold">{UI.orderSummary[lang]}</h2>
           <div className="mt-4 space-y-2">
             {rows.map((row) => (
-              <div key={row.dishId} className="flex justify-between gap-4 text-sm">
-                <span>{row.quantity} × {getL10n(row.dish.name, lang)}</span>
-                <span className="font-bold">{formatPrice(row.dish.price * row.quantity)}</span>
+              <div key={row.key} className="flex justify-between gap-4 text-sm">
+                <span>
+                  {row.quantity} × {getL10n(row.dish.name, lang)}
+                  {row.selections.map((selection) => (
+                    <span key={selection.groupId} className="block text-brand-text-muted">
+                      {getL10n(selection.groupLabel, lang)}: {getL10n(selection.optionLabel, lang)}
+                      {selection.priceAdjustmentCents > 0 && ` (+${formatPrice(selection.priceAdjustmentCents / 100)})`}
+                    </span>
+                  ))}
+                </span>
+                <span className="font-bold">{formatPrice((row.dish.price + row.selections.reduce((extra, selection) => extra + selection.priceAdjustmentCents, 0) / 100) * row.quantity)}</span>
               </div>
             ))}
           </div>

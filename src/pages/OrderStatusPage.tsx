@@ -117,9 +117,16 @@ export default function OrderStatusPage() {
         {order && (
           <section className="mt-8">
             <div className="space-y-3">
-              {order.items.map((item) => (
-                <div key={item.dishId} className="flex justify-between gap-4 text-sm">
-                  <span>{item.quantity} × {getL10n(item.name, lang)}</span>
+              {order.items.map((item, index) => (
+                <div key={`${item.dishId}-${index}`} className="flex justify-between gap-4 text-sm">
+                  <span>
+                    {item.quantity} × {getL10n(item.name, lang)}
+                    {item.selections?.map((selection) => (
+                      <span key={selection.groupId} className="block text-brand-text-muted">
+                        {getL10n(selection.groupLabel, lang)}: {getL10n(selection.optionLabel, lang)}
+                      </span>
+                    ))}
+                  </span>
                   <span className="font-bold">{formatPrice(item.lineTotalCents / 100)}</span>
                 </div>
               ))}

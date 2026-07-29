@@ -79,6 +79,7 @@ create table if not exists public.order_items (
   order_id          uuid not null references public.orders (id) on delete cascade,
   dish_id           text not null,
   name              jsonb not null,
+  selections        jsonb not null default '[]'::jsonb,
   unit_price_cents  integer not null check (unit_price_cents >= 0),
   quantity          integer not null check (quantity between 1 and 99),
   line_total_cents  integer not null check (line_total_cents = unit_price_cents * quantity),

@@ -22,11 +22,26 @@ export interface Allergen {
   color: string
 }
 
+export interface DishOption {
+  id: string
+  label: Localized
+  inStock: boolean
+  priceAdjustmentCents: number
+}
+
+export interface DishOptionGroup {
+  id: string
+  label: Localized
+  required: boolean
+  options: DishOption[]
+}
+
 /** "Good to know" metadata shown in the dish detail sheet. */
 export interface DishMeta {
   halal: boolean
   spice: Localized | null
   serves: Localized
+  optionGroups?: DishOptionGroup[]
 }
 
 /** A single menu dish. */
@@ -93,13 +108,24 @@ export const ORDERING_MODES = ['closed', 'approval_required'] as const
 export type OrderingMode = (typeof ORDERING_MODES)[number]
 
 export interface CartItem {
+  key: string
   dishId: string
   quantity: number
+  selections: ItemSelection[]
+}
+
+export interface ItemSelection {
+  groupId: string
+  groupLabel: Localized
+  optionId: string
+  optionLabel: Localized
+  priceAdjustmentCents: number
 }
 
 export interface OrderItemSnapshot {
   dishId: string
   name: Localized
+  selections: ItemSelection[]
   unitPriceCents: number
   quantity: number
   lineTotalCents: number
