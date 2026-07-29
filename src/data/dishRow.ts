@@ -28,7 +28,7 @@ export function rowToDish(row: DishRow): Dish {
     longDescription: row.long_description,
     price: typeof row.price === 'string' ? Number(row.price) : row.price,
     category: row.category,
-    image: row.image_url ?? '',
+    image: row.image_url || '/images/sunnah-cafe-logo.png',
     isPopular: row.is_popular,
     inStock: row.in_stock,
     ingredients: row.ingredients,

@@ -14,45 +14,46 @@ import { useAdminLang } from '../../lib/adminLang'
 import { Upload, X, Plus } from 'lucide-react'
 import { toast } from 'sonner'
 
+const DEFAULT_DISH_IMAGE = '/images/sunnah-cafe-logo.png'
+
 // ── Predefined allergen presets ───────────────────────────────────────────────
 const ALLERGEN_PRESETS = [
-  { key: 'wheat',  label: { EN: 'Gluten (wheat)', FI: 'Gluteeni (vehnä)', SO: 'Gluten (qamadi)' }, color: 'wheat' },
-  { key: 'dairy',  label: { EN: 'Contains dairy', FI: 'Sisältää maitoa', SO: 'Waxa ku jira caano' }, color: 'dairy' },
-  { key: 'lactose-free', label: { EN: 'Lactose-free', FI: 'Laktoositon', SO: 'Aan lahayn laktoos' }, color: 'dairy' },
-  { key: 'nuts',   label: { EN: 'May contain nuts', FI: 'Saattaa sisältää pähkinöitä', SO: 'Waxa laga yaabaa inuu leeyahay kaad' }, color: 'shared' },
-  { key: 'eggs',   label: { EN: 'Contains eggs', FI: 'Sisältää munia', SO: 'Waxaa ku jira ukun' }, color: 'shared' },
+  { key: 'wheat',  label: { EN: 'Gluten (wheat)', FI: 'Gluteeni (vehnä)' }, color: 'wheat' },
+  { key: 'dairy',  label: { EN: 'Contains dairy', FI: 'Sisältää maitoa' }, color: 'dairy' },
+  { key: 'lactose-free', label: { EN: 'Lactose-free', FI: 'Laktoositon' }, color: 'dairy' },
+  { key: 'nuts',   label: { EN: 'May contain nuts', FI: 'Saattaa sisältää pähkinöitä' }, color: 'shared' },
+  { key: 'eggs',   label: { EN: 'Contains eggs', FI: 'Sisältää munia' }, color: 'shared' },
 ]
 
 const SPICE_OPTIONS = [
-  { key: 'none', EN: 'No spice label', FI: 'Ei tulisuusmerkintää', SO: 'Calaamad basbaas ma leh' },
-  { key: 'mild', EN: 'Mild spice', FI: 'Mieto tulisuus', SO: 'Basbaas yar' },
-  { key: 'medium', EN: 'Medium spice', FI: 'Keskivahva tulisuus', SO: 'Basbaas keskitaso ah' },
-  { key: 'hot', EN: 'Hot spice', FI: 'Tulinen', SO: 'Aad u kulul' },
+  { key: 'none', EN: 'No spice label', FI: 'Ei tulisuusmerkintää' },
+  { key: 'mild', EN: 'Mild spice', FI: 'Mieto tulisuus' },
+  { key: 'medium', EN: 'Medium spice', FI: 'Keskivahva tulisuus' },
+  { key: 'hot', EN: 'Hot spice', FI: 'Tulinen' },
 ]
 
 const SERVES_OPTIONS = {
   EN: ['Serves 1', 'Serves 2', 'Serves 3–4'],
   FI: ['1 hengelle', '2 hengelle', '3–4 hengelle'],
-  SO: ['1 qof', '2 qof', '3–4 qof'],
 }
 
 function empty(categories) {
   return {
-    name:            { EN: '', FI: '', SO: '' },
-    subtitle:        { EN: '', FI: '', SO: '' },
-    description:     { EN: '', FI: '', SO: '' },
-    longDescription: { EN: '', FI: '', SO: '' },
+    name:            { EN: '', FI: '' },
+    subtitle:        { EN: '', FI: '' },
+    description:     { EN: '', FI: '' },
+    longDescription: { EN: '', FI: '' },
     price:           '',
     category:        categories[0]?.id || '',
-    image:           '',
+    image:           DEFAULT_DISH_IMAGE,
     isPopular:       false,
     inStock:         true,
-    ingredients:     { EN: '', FI: '', SO: '' },
+    ingredients:     { EN: '', FI: '' },
     allergens:       [],
     meta: {
       halal:  true,
-      spice:  { EN: 'Mild spice', FI: 'Mieto tulisuus', SO: 'Basbaas yar' },
-      serves: { EN: 'Serves 1', FI: '1 hengelle', SO: '1 qof' },
+      spice:  { EN: 'Mild spice', FI: 'Mieto tulisuus' },
+      serves: { EN: 'Serves 1', FI: '1 hengelle' },
     },
   }
 }
@@ -71,13 +72,12 @@ function dishToForm(dish) {
     ingredients:     {
       EN: (dish.ingredients?.EN || []).join(', '),
       FI: (dish.ingredients?.FI || []).join(', '),
-      SO: (dish.ingredients?.SO || []).join(', '),
     },
     allergens:       dish.allergens ? JSON.parse(JSON.stringify(dish.allergens)) : [],
     meta: {
       halal:  dish.meta?.halal ?? true,
       spice:  dish.meta?.spice ? { ...dish.meta.spice } : null,
-      serves: dish.meta?.serves ? { ...dish.meta.serves } : { EN: 'Serves 1', FI: '1 hengelle', SO: '1 qof' },
+      serves: dish.meta?.serves ? { ...dish.meta.serves } : { EN: 'Serves 1', FI: '1 hengelle' },
     },
   }
 }
@@ -154,7 +154,7 @@ function LangFields({ lang, form, setField, setForm, t }) {
                   ...current.meta,
                   spice: option?.key === 'none'
                     ? null
-                    : { EN: option.EN, FI: option.FI, SO: option.SO },
+                    : { EN: option.EN, FI: option.FI },
                 },
               }))
             }}
@@ -172,7 +172,6 @@ function LangFields({ lang, form, setField, setForm, t }) {
               const idx = SERVES_OPTIONS[lang].indexOf(e.target.value)
               setField('meta.serves', 'EN', SERVES_OPTIONS.EN[idx])
               setField('meta.serves', 'FI', SERVES_OPTIONS.FI[idx])
-              setField('meta.serves', 'SO', SERVES_OPTIONS.SO[idx])
             }}
           >
             {SERVES_OPTIONS[lang].map(o => <option key={o} value={o}>{o}</option>)}
@@ -263,7 +262,6 @@ export default function DishForm({ dish, categories, open, onClose, onSaved }) {
         ingredients: {
           EN: form.ingredients.EN.split(',').map(s => s.trim()).filter(Boolean),
           FI: form.ingredients.FI.split(',').map(s => s.trim()).filter(Boolean),
-          SO: form.ingredients.SO.split(',').map(s => s.trim()).filter(Boolean),
         },
         allergens: form.allergens,
         meta: {

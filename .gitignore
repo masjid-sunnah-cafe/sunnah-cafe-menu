@@ -37,3 +37,4 @@ public/uploads/*
 *.sqlite-wal
 .vercel
 supabase/.temp/
+.local/

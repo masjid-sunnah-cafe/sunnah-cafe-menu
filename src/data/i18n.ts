@@ -100,7 +100,6 @@ export const UI = {
 
 export function getDishesText(lang, count) {
   if (lang === 'FI') return `${count} annosta`
-  if (lang === 'SO') return `${count} cunto`
   return `${count} dish${count !== 1 ? 'es' : ''}`
 }
 

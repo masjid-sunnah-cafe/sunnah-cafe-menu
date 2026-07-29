@@ -9,7 +9,7 @@ import DishDetailSheet from '../components/DishDetailSheet'
 import { getOrderingMode } from '../data/orderingRepository'
 
 const LANG_KEY = 'sunnah-cafe-lang'
-const ALL_CATEGORY = { id: 'all', label: { EN: 'All', FI: 'Kaikki', SO: 'Dhammaan' } }
+const ALL_CATEGORY = { id: 'all', label: { EN: 'All', FI: 'Kaikki' } }
 
 // ── Skeleton loader ───────────────────────────────────────────────────────────
 function SkeletonCard() {

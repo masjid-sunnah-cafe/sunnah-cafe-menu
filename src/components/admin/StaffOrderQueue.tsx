@@ -17,7 +17,6 @@ import { Button } from '../ui/button'
 const copy = {
   EN: { empty: 'No active orders', refresh: 'Refresh orders', accept: 'Accept', ready: 'Mark ready', complete: 'Handed over / delivered', cancel: 'Reject / cancel', payment: 'Mark payment received', note: 'Order note', closed: 'Closed', approval_required: 'Open' },
   FI: { empty: 'Ei aktiivisia tilauksia', refresh: 'Päivitä tilaukset', accept: 'Hyväksy', ready: 'Merkitse valmiiksi', complete: 'Luovutettu / toimitettu', cancel: 'Hylkää / peruuta', payment: 'Merkitse maksetuksi', note: 'Tilausohje', closed: 'Suljettu', approval_required: 'Auki' },
-  SO: { empty: 'Ma jiraan dalabyo firfircoon', refresh: 'Cusboonaysii dalabyada', accept: 'Aqbal', ready: 'Calaamadee diyaar', complete: 'La wareejiyay / la geeyay', cancel: 'Diid / jooji', payment: 'Calaamadee lacagta la helay', note: 'Faahfaahinta dalabka', closed: 'Xiran', approval_required: 'Furan' },
 }
 
 const nextActions = {

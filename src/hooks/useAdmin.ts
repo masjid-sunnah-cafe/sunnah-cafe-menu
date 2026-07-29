@@ -50,6 +50,10 @@ export function updateDish(id: string, patch: Partial<DishInput>): Promise<Dish>
   return repo.updateDish(RESTAURANT_SLUG, id, patch)
 }
 
+export function reorderDishes(categoryId: string, orderedIds: string[]): Promise<void> {
+  return repo.reorderDishes(RESTAURANT_SLUG, categoryId, orderedIds)
+}
+
 export function deleteDish(id: string): Promise<void> {
   return repo.deleteDish(RESTAURANT_SLUG, id)
 }

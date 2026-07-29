@@ -23,6 +23,7 @@ import {
  */
 
 const local = !supabase
+const DEFAULT_DISH_IMAGE = '/images/sunnah-cafe-logo.png'
 
 export const isDemoMode = local
 
@@ -45,7 +46,7 @@ function buildId(input: DishInput): string {
 }
 
 export async function createDish(slug: string, input: DishInput): Promise<Dish> {
-  const dish: Dish = { ...input, id: buildId(input) }
+  const dish: Dish = { ...input, id: buildId(input), image: input.image || DEFAULT_DISH_IMAGE }
 
   if (local) {
     const dishes = getLocalDishes(slug)
@@ -89,7 +90,7 @@ export async function updateDish(
   if (patch.longDescription) partialRow.long_description = row.long_description
   if (patch.price != null) partialRow.price = row.price
   if (patch.category != null) partialRow.category = row.category
-  if (patch.image != null) partialRow.image_url = row.image_url
+  if (patch.image != null) partialRow.image_url = patch.image || DEFAULT_DISH_IMAGE
   if (patch.isPopular != null) partialRow.is_popular = row.is_popular
   if (patch.inStock != null) partialRow.in_stock = row.in_stock
   if (patch.ingredients) partialRow.ingredients = row.ingredients
@@ -104,6 +105,26 @@ export async function updateDish(
     .single()
   if (error) throw error
   return rowToDish(data as DishRow)
+}
+
+export async function reorderDishes(slug: string, categoryId: string, orderedIds: string[]): Promise<void> {
+  if (local) {
+    const positions = new Map(orderedIds.map((id, index) => [id, index]))
+    const dishes = getLocalDishes(slug).map((dish) => (
+      dish.category === categoryId && positions.has(dish.id)
+        ? { ...dish, sortOrder: positions.get(dish.id)! }
+        : dish
+    ))
+    setLocalDishes(slug, dishes)
+    return
+  }
+
+  const updates = orderedIds.map((id, sortOrder) => (
+    supabase!.from('dishes').update({ sort_order: sortOrder }).eq('id', id).eq('category', categoryId)
+  ))
+  const results = await Promise.all(updates)
+  const failed = results.find(({ error }) => error)
+  if (failed?.error) throw failed.error
 }
 
 export async function deleteDish(slug: string, id: string): Promise<void> {

@@ -1,6 +1,6 @@
 // Domain types shared across the Sunnah Cafe app.
 
-export const LANGS = ['EN', 'FI', 'SO'] as const
+export const LANGS = ['EN', 'FI'] as const
 export type Lang = (typeof LANGS)[number]
 
 /** A string translated into every supported language. */

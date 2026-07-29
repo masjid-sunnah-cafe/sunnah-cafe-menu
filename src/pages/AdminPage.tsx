@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { isLoggedIn, logout, fetchAllCategories, fetchAllDishes } from '../hooks/useAdmin'
+import { isLoggedIn, logout, fetchAllCategories, fetchAllDishes, reorderDishes } from '../hooks/useAdmin'
 import LoginForm from '../components/admin/LoginForm'
 import AdminHeader from '../components/admin/AdminHeader'
 import AdminDishCard from '../components/admin/AdminDishCard'
@@ -9,8 +9,8 @@ import StaffOrderQueue from '../components/admin/StaffOrderQueue'
 import OrderHistory from '../components/admin/OrderHistory'
 import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
-import { Plus, Search, Tags, UtensilsCrossed, CheckCircle2, XCircle, ListOrdered, History } from 'lucide-react'
-import { Toaster } from 'sonner'
+import { Plus, Search, Tags, UtensilsCrossed, CheckCircle2, XCircle, ListOrdered, History, ArrowDownAZ } from 'lucide-react'
+import { Toaster, toast } from 'sonner'
 import { AdminLangProvider, useAdminLang } from '../lib/adminLang'
 
 // ── Stat card ─────────────────────────────────────────────────────────────────
@@ -38,6 +38,9 @@ function AdminPageInner() {
   const [search, setSearch]         = useState('')
   const [filterCat, setFilterCat]   = useState('all')
   const [filterStock, setFilterStock] = useState('all') // 'all' | 'in' | 'out'
+  const [sortBy, setSortBy]           = useState('manual')
+  const [draggedDishId, setDraggedDishId] = useState(null)
+  const [dragTargetId, setDragTargetId] = useState(null)
   const [formOpen, setFormOpen]     = useState(false)
   const [editDish, setEditDish]     = useState(null)
   const [categoriesOpen, setCategoriesOpen] = useState(false)
@@ -123,6 +126,44 @@ function AdminPageInner() {
       || (filterStock === 'out' && !d.inStock)
     return matchSearch && matchCat && matchStock
   })
+  const categoryOrder = new Map(categories.map((category, index) => [category.id, index]))
+  const sortedVisible = [...visible].sort((left, right) => {
+    if (filterCat === 'all') {
+      const categoryDifference = (categoryOrder.get(left.category) ?? Number.MAX_SAFE_INTEGER)
+        - (categoryOrder.get(right.category) ?? Number.MAX_SAFE_INTEGER)
+      if (categoryDifference !== 0) return categoryDifference
+    }
+    if (sortBy === 'name') return left.name[lang].localeCompare(right.name[lang], lang)
+    if (sortBy === 'price-low') return left.price - right.price
+    if (sortBy === 'price-high') return right.price - left.price
+    return left.sortOrder - right.sortOrder || left.name.EN.localeCompare(right.name.EN)
+  })
+  const canDrag = sortBy === 'manual' && filterCat !== 'all' && !search && filterStock === 'all'
+
+  async function handleDrop(targetId) {
+    if (!canDrag || !draggedDishId || draggedDishId === targetId) return
+    const reordered = [...sortedVisible]
+    const sourceIndex = reordered.findIndex((dish) => dish.id === draggedDishId)
+    const targetIndex = reordered.findIndex((dish) => dish.id === targetId)
+    if (sourceIndex < 0 || targetIndex < 0) return
+
+    const [moved] = reordered.splice(sourceIndex, 1)
+    reordered.splice(targetIndex, 0, moved)
+    const orderedIds = reordered.map((dish) => dish.id)
+    const previous = dishes
+    setDishes((current) => current.map((dish) => {
+      const sortOrder = orderedIds.indexOf(dish.id)
+      return dish.category === filterCat && sortOrder >= 0 ? { ...dish, sortOrder } : dish
+    }))
+    setDraggedDishId(null)
+    setDragTargetId(null)
+    try {
+      await reorderDishes(filterCat, orderedIds)
+    } catch (error) {
+      setDishes(previous)
+      toast.error(error instanceof Error ? error.message : 'Järjestyksen tallennus epäonnistui')
+    }
+  }
 
   if (!authed) {
     return (
@@ -211,6 +252,21 @@ function AdminPageInner() {
               <option value="in">{t.stockIn}</option>
               <option value="out">{t.stockOut}</option>
             </select>
+
+            <div className="relative">
+              <ArrowDownAZ className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-brand-text-muted" />
+              <select
+                className="h-10 rounded-xl border border-brand-border bg-white py-0 pl-9 pr-3 text-sm text-brand-text-dark focus:outline-none focus:ring-2 focus:ring-brand-gold"
+                value={sortBy}
+                onChange={e => setSortBy(e.target.value)}
+                aria-label={lang === 'FI' ? 'Järjestä tuotteet' : 'Sort dishes'}
+              >
+                <option value="manual">{lang === 'FI' ? 'Oma järjestys' : 'Manual order'}</option>
+                <option value="name">{lang === 'FI' ? 'Nimi A-Ö' : 'Name A-Z'}</option>
+                <option value="price-low">{lang === 'FI' ? 'Hinta: pieni suuri' : 'Price: low to high'}</option>
+                <option value="price-high">{lang === 'FI' ? 'Hinta: suuri pieni' : 'Price: high to low'}</option>
+              </select>
+            </div>
           </div>
 
           <div className="flex gap-2 shrink-0">
@@ -232,7 +288,7 @@ function AdminPageInner() {
         )}
 
         {/* Empty state */}
-        {!loading && visible.length === 0 && (
+        {!loading && sortedVisible.length === 0 && (
           <div className="mt-16 flex flex-col items-center gap-3 text-center text-brand-text-muted">
             <UtensilsCrossed className="h-12 w-12 opacity-30" />
             <p className="font-display text-lg font-bold text-brand-dark">{t.noDishesFound}</p>
@@ -241,15 +297,29 @@ function AdminPageInner() {
         )}
 
         {/* Dish grid */}
-        {!loading && visible.length > 0 && (
+        {!loading && sortedVisible.length > 0 && (
           <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 lg:grid-cols-4 lg:gap-5">
-            {visible.map(dish => (
+            {sortedVisible.map(dish => (
               <AdminDishCard
                 key={dish.id}
                 dish={dish}
+                categories={categories}
                 onEdit={openEdit}
                 onDeleted={handleDeleted}
                 onUpdated={handleUpdated}
+                draggable={canDrag}
+                isDragTarget={dragTargetId === dish.id}
+                onDragStart={() => setDraggedDishId(dish.id)}
+                onDragEnd={() => {
+                  setDraggedDishId(null)
+                  setDragTargetId(null)
+                }}
+                onDragOver={(event) => {
+                  if (!canDrag) return
+                  event.preventDefault()
+                  setDragTargetId(dish.id)
+                }}
+                onDrop={() => void handleDrop(dish.id)}
               />
             ))}
           </div>

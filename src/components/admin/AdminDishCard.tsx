@@ -2,7 +2,7 @@ import { useState, useRef } from 'react'
 import { Switch } from '../ui/switch'
 import { Button } from '../ui/button'
 import { Badge } from '../ui/badge'
-import { Pencil, Trash2, Star, Package } from 'lucide-react'
+import { Pencil, Trash2, Star, Package, GripVertical } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -14,7 +14,7 @@ import { formatPrice } from '../../lib/format'
 import { useAdminLang } from '../../lib/adminLang'
 import { toast } from 'sonner'
 
-export default function AdminDishCard({ dish, onEdit, onDeleted, onUpdated }) {
+export default function AdminDishCard({ dish, categories, onEdit, onDeleted, onUpdated, draggable, onDragStart, onDragEnd, onDragOver, onDrop, isDragTarget }) {
   const { t, lang } = useAdminLang()
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [busy, setBusy] = useState(false)
@@ -66,10 +66,23 @@ export default function AdminDishCard({ dish, onEdit, onDeleted, onUpdated }) {
     'warm-drinks': 'bg-amber-100 text-amber-800',
     'cold-drinks': 'bg-blue-100 text-blue-700',
   }
+  const categoryLabel = categories.find((category) => category.id === dish.category)?.label
 
   return (
     <>
-      <div className={`relative flex flex-col overflow-hidden rounded-lg border bg-white shadow-sm transition-all duration-200 ${!dish.inStock ? 'border-brand-border/50 opacity-60' : 'border-brand-border hover:border-brand-gold/60 hover:shadow-md'}`}>
+      <div
+        draggable={draggable}
+        onDragStart={onDragStart}
+        onDragEnd={onDragEnd}
+        onDragOver={onDragOver}
+        onDrop={onDrop}
+        className={`relative flex flex-col overflow-hidden rounded-lg border bg-white shadow-sm transition-all duration-200 ${isDragTarget ? 'border-brand-gold ring-2 ring-brand-gold/30' : !dish.inStock ? 'border-brand-border/50 opacity-60' : 'border-brand-border hover:border-brand-gold/60 hover:shadow-md'}`}
+      >
+        {draggable && (
+          <div className="absolute left-2 top-2 z-10 flex h-7 w-7 items-center justify-center rounded-md border border-brand-border/70 bg-white/90 text-brand-text-muted shadow-sm" title="Vedä järjestääksesi">
+            <GripVertical className="h-4 w-4" aria-hidden="true" />
+          </div>
+        )}
         {/* Out of stock ribbon */}
         {!dish.inStock && (
           <div className="absolute top-3 left-3 z-10">
@@ -111,7 +124,7 @@ export default function AdminDishCard({ dish, onEdit, onDeleted, onUpdated }) {
           <div className="flex items-center justify-between">
             <span className="font-display font-bold text-brand-dark">{formatPrice(dish.price)}</span>
             <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold capitalize ${categoryColors[dish.category] || 'bg-brand-border text-brand-text-muted'}`}>
-              {dish.category.replace('-', ' ')}
+              {categoryLabel?.[lang] || categoryLabel?.EN || dish.category.replace(/-/g, ' ')}
             </span>
           </div>
 
