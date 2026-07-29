@@ -73,7 +73,7 @@ export default function AdminDishCard({ dish, categories, onEdit, onDeleted, onU
       <div
         ref={sortRef}
         style={sortStyle}
-        className={`relative flex flex-col overflow-hidden rounded-lg border bg-white shadow-sm transition-all duration-200 ${isDragging ? 'z-20 scale-[1.02] border-brand-gold shadow-lg' : !dish.inStock ? 'border-brand-border/50 opacity-60' : 'border-brand-border hover:border-brand-gold/60 hover:shadow-md'}`}
+        className={`relative flex flex-col overflow-hidden rounded-lg border bg-white shadow-sm transition-all duration-200 ${isDragging ? 'border-brand-gold opacity-40' : !dish.inStock ? 'border-brand-border/50 opacity-60' : 'border-brand-border hover:border-brand-gold/60 hover:shadow-md'}`}
       >
         {sortable && (
           <button

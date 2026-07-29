@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import {
   DndContext,
+  DragOverlay,
   KeyboardSensor,
   PointerSensor,
   TouchSensor,
@@ -63,7 +64,11 @@ function SortableDishCard({ dish, categories, onEdit, onDeleted, onUpdated, sort
       onUpdated={onUpdated}
       sortable={sortable}
       sortRef={setNodeRef}
-      sortStyle={{ transform: CSS.Transform.toString(transform), transition }}
+      sortStyle={{
+        transform: isDragging ? undefined : CSS.Transform.toString(transform),
+        transition,
+        willChange: 'transform',
+      }}
       sortAttributes={attributes}
       sortListeners={listeners}
       isDragging={isDragging}
@@ -86,6 +91,7 @@ function AdminPageInner() {
   const [editDish, setEditDish]     = useState(null)
   const [categoriesOpen, setCategoriesOpen] = useState(false)
   const [view, setView] = useState('orders')
+  const [activeDishId, setActiveDishId] = useState(null)
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(TouchSensor, { activationConstraint: { delay: 150, tolerance: 5 } }),
@@ -185,13 +191,20 @@ function AdminPageInner() {
     return left.sortOrder - right.sortOrder || left.name.EN.localeCompare(right.name.EN)
   })
   const canDrag = sortBy === 'manual' && filterCat !== 'all' && !search && filterStock === 'all'
+  const activeDish = dishes.find((dish) => dish.id === activeDishId)
 
   async function handleDragEnd({ active, over }) {
-    if (!canDrag || !over || active.id === over.id) return
+    if (!canDrag || !over || active.id === over.id) {
+      setActiveDishId(null)
+      return
+    }
     const reordered = [...sortedVisible]
     const sourceIndex = reordered.findIndex((dish) => dish.id === active.id)
     const targetIndex = reordered.findIndex((dish) => dish.id === over.id)
-    if (sourceIndex < 0 || targetIndex < 0) return
+    if (sourceIndex < 0 || targetIndex < 0) {
+      setActiveDishId(null)
+      return
+    }
 
     const [moved] = reordered.splice(sourceIndex, 1)
     reordered.splice(targetIndex, 0, moved)
@@ -206,6 +219,8 @@ function AdminPageInner() {
     } catch (error) {
       setDishes(previous)
       toast.error(error instanceof Error ? error.message : 'Järjestyksen tallennus epäonnistui')
+    } finally {
+      setActiveDishId(null)
     }
   }
 
@@ -345,6 +360,8 @@ function AdminPageInner() {
           <DndContext
             sensors={sensors}
             collisionDetection={closestCenter}
+            onDragStart={({ active }) => setActiveDishId(active.id)}
+            onDragCancel={() => setActiveDishId(null)}
             onDragEnd={(event) => void handleDragEnd(event)}
           >
             <SortableContext items={sortedVisible.map((dish) => dish.id)} strategy={rectSortingStrategy}>
@@ -362,6 +379,18 @@ function AdminPageInner() {
                 ))}
               </div>
             </SortableContext>
+            <DragOverlay dropAnimation={null}>
+              {activeDish && (
+                <div className="w-52 rounded-lg border border-brand-gold bg-white px-3 py-2 shadow-xl">
+                  <p className="line-clamp-1 text-sm font-bold text-brand-dark">
+                    {activeDish.name[lang] || activeDish.name.EN}
+                  </p>
+                  <p className="mt-0.5 line-clamp-1 text-xs text-brand-text-muted">
+                    {activeDish.subtitle[lang] || activeDish.subtitle.EN}
+                  </p>
+                </div>
+              )}
+            </DragOverlay>
           </DndContext>
         )}
         </>}
