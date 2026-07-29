@@ -14,7 +14,7 @@ import { formatPrice } from '../../lib/format'
 import { useAdminLang } from '../../lib/adminLang'
 import { toast } from 'sonner'
 
-export default function AdminDishCard({ dish, categories, onEdit, onDeleted, onUpdated, draggable, onDragStart, onDragEnd, onDragOver, onDrop, isDragTarget }) {
+export default function AdminDishCard({ dish, categories, onEdit, onDeleted, onUpdated, sortable, sortRef, sortStyle, sortAttributes, sortListeners, isDragging }) {
   const { t, lang } = useAdminLang()
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [busy, setBusy] = useState(false)
@@ -71,17 +71,21 @@ export default function AdminDishCard({ dish, categories, onEdit, onDeleted, onU
   return (
     <>
       <div
-        draggable={draggable}
-        onDragStart={onDragStart}
-        onDragEnd={onDragEnd}
-        onDragOver={onDragOver}
-        onDrop={onDrop}
-        className={`relative flex flex-col overflow-hidden rounded-lg border bg-white shadow-sm transition-all duration-200 ${isDragTarget ? 'border-brand-gold ring-2 ring-brand-gold/30' : !dish.inStock ? 'border-brand-border/50 opacity-60' : 'border-brand-border hover:border-brand-gold/60 hover:shadow-md'}`}
+        ref={sortRef}
+        style={sortStyle}
+        className={`relative flex flex-col overflow-hidden rounded-lg border bg-white shadow-sm transition-all duration-200 ${isDragging ? 'z-20 scale-[1.02] border-brand-gold shadow-lg' : !dish.inStock ? 'border-brand-border/50 opacity-60' : 'border-brand-border hover:border-brand-gold/60 hover:shadow-md'}`}
       >
-        {draggable && (
-          <div className="absolute left-2 top-2 z-10 flex h-7 w-7 items-center justify-center rounded-md border border-brand-border/70 bg-white/90 text-brand-text-muted shadow-sm" title="Vedä järjestääksesi">
+        {sortable && (
+          <button
+            type="button"
+            {...sortAttributes}
+            {...sortListeners}
+            className="absolute left-2 top-2 z-10 flex h-8 w-8 touch-none items-center justify-center rounded-md border border-brand-border/70 bg-white/90 text-brand-text-muted shadow-sm"
+            title="Vedä järjestääksesi"
+            aria-label="Vedä järjestääksesi"
+          >
             <GripVertical className="h-4 w-4" aria-hidden="true" />
-          </div>
+          </button>
         )}
         {/* Out of stock ribbon */}
         {!dish.inStock && (

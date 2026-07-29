@@ -1,4 +1,20 @@
 import { useState, useEffect, useCallback } from 'react'
+import {
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  TouchSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core'
+import {
+  SortableContext,
+  rectSortingStrategy,
+  sortableKeyboardCoordinates,
+  useSortable,
+} from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 import { isLoggedIn, logout, fetchAllCategories, fetchAllDishes, reorderDishes } from '../hooks/useAdmin'
 import LoginForm from '../components/admin/LoginForm'
 import AdminHeader from '../components/admin/AdminHeader'
@@ -28,6 +44,33 @@ function StatCard({ icon: Icon, label, value, color }) {
   )
 }
 
+function SortableDishCard({ dish, categories, onEdit, onDeleted, onUpdated, sortable }) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: dish.id, disabled: !sortable })
+
+  return (
+    <AdminDishCard
+      dish={dish}
+      categories={categories}
+      onEdit={onEdit}
+      onDeleted={onDeleted}
+      onUpdated={onUpdated}
+      sortable={sortable}
+      sortRef={setNodeRef}
+      sortStyle={{ transform: CSS.Transform.toString(transform), transition }}
+      sortAttributes={attributes}
+      sortListeners={listeners}
+      isDragging={isDragging}
+    />
+  )
+}
+
 // ── Main admin page ───────────────────────────────────────────────────────────
 function AdminPageInner() {
   const { t, lang } = useAdminLang()
@@ -39,12 +82,15 @@ function AdminPageInner() {
   const [filterCat, setFilterCat]   = useState('all')
   const [filterStock, setFilterStock] = useState('all') // 'all' | 'in' | 'out'
   const [sortBy, setSortBy]           = useState('manual')
-  const [draggedDishId, setDraggedDishId] = useState(null)
-  const [dragTargetId, setDragTargetId] = useState(null)
   const [formOpen, setFormOpen]     = useState(false)
   const [editDish, setEditDish]     = useState(null)
   const [categoriesOpen, setCategoriesOpen] = useState(false)
   const [view, setView] = useState('orders')
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 150, tolerance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  )
 
   const loadMenu = useCallback(async () => {
     setLoading(true)
@@ -140,11 +186,11 @@ function AdminPageInner() {
   })
   const canDrag = sortBy === 'manual' && filterCat !== 'all' && !search && filterStock === 'all'
 
-  async function handleDrop(targetId) {
-    if (!canDrag || !draggedDishId || draggedDishId === targetId) return
+  async function handleDragEnd({ active, over }) {
+    if (!canDrag || !over || active.id === over.id) return
     const reordered = [...sortedVisible]
-    const sourceIndex = reordered.findIndex((dish) => dish.id === draggedDishId)
-    const targetIndex = reordered.findIndex((dish) => dish.id === targetId)
+    const sourceIndex = reordered.findIndex((dish) => dish.id === active.id)
+    const targetIndex = reordered.findIndex((dish) => dish.id === over.id)
     if (sourceIndex < 0 || targetIndex < 0) return
 
     const [moved] = reordered.splice(sourceIndex, 1)
@@ -155,8 +201,6 @@ function AdminPageInner() {
       const sortOrder = orderedIds.indexOf(dish.id)
       return dish.category === filterCat && sortOrder >= 0 ? { ...dish, sortOrder } : dish
     }))
-    setDraggedDishId(null)
-    setDragTargetId(null)
     try {
       await reorderDishes(filterCat, orderedIds)
     } catch (error) {
@@ -298,31 +342,27 @@ function AdminPageInner() {
 
         {/* Dish grid */}
         {!loading && sortedVisible.length > 0 && (
-          <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 lg:grid-cols-4 lg:gap-5">
-            {sortedVisible.map(dish => (
-              <AdminDishCard
-                key={dish.id}
-                dish={dish}
-                categories={categories}
-                onEdit={openEdit}
-                onDeleted={handleDeleted}
-                onUpdated={handleUpdated}
-                draggable={canDrag}
-                isDragTarget={dragTargetId === dish.id}
-                onDragStart={() => setDraggedDishId(dish.id)}
-                onDragEnd={() => {
-                  setDraggedDishId(null)
-                  setDragTargetId(null)
-                }}
-                onDragOver={(event) => {
-                  if (!canDrag) return
-                  event.preventDefault()
-                  setDragTargetId(dish.id)
-                }}
-                onDrop={() => void handleDrop(dish.id)}
-              />
-            ))}
-          </div>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={(event) => void handleDragEnd(event)}
+          >
+            <SortableContext items={sortedVisible.map((dish) => dish.id)} strategy={rectSortingStrategy}>
+              <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 lg:grid-cols-4 lg:gap-5">
+                {sortedVisible.map(dish => (
+                  <SortableDishCard
+                    key={dish.id}
+                    dish={dish}
+                    categories={categories}
+                    onEdit={openEdit}
+                    onDeleted={handleDeleted}
+                    onUpdated={handleUpdated}
+                    sortable={canDrag}
+                  />
+                ))}
+              </div>
+            </SortableContext>
+          </DndContext>
         )}
         </>}
       </div>
