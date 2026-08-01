@@ -101,7 +101,8 @@ Deno.serve(async (request) => {
 
     if (orderError || !order) throw new Error(orderError?.message || 'Could not create order.')
 
-    if (body.paymentMethod !== 'sumup_online' || order.status !== 'awaiting_payment') {
+    const useHostedCheckout = Deno.env.get('SUMUP_USE_HOSTED_CHECKOUT') === 'true'
+    if (body.paymentMethod !== 'sumup_online' || order.status !== 'awaiting_payment' || !useHostedCheckout) {
       return jsonResponse({
         orderId: order.id,
         orderNumber: order.order_number,

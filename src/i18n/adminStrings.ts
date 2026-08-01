@@ -1,5 +1,5 @@
 // Admin-panel UI strings in EN / FI. Kept separate from the customer
-// strings (src/data/i18n.js) since the audience and vocabulary differ.
+// strings (src/data/i18n.ts) since the audience and vocabulary differ.
 
 export const ADMIN_LANGS = ['FI', 'EN']
 export const ADMIN_LANG_NAMES = { FI: 'Suomi', EN: 'English' }
@@ -79,7 +79,6 @@ const STRINGS = {
     fIngredients: 'Ingredients',
     fIngredientsHint: '(comma-separated)',
     fSpice: 'Spice level',
-    fServes: 'Serves',
     commonFields: 'Common fields',
     fPrice: 'Price (€)',
     fCategory: 'Category',
@@ -102,6 +101,10 @@ const STRINGS = {
     addOption: 'Add option',
     removeOption: 'Remove option',
     removeOptionGroup: 'Remove choice group',
+    moveOptionGroupUp: 'Move choice group up',
+    moveOptionGroupDown: 'Move choice group down',
+    moveOptionUp: 'Move option up',
+    moveOptionDown: 'Move option down',
     tInStock: 'In stock',
     tInStockSub: 'Visible to customers when enabled',
     tPopular: 'Popular ⭐',
@@ -191,7 +194,6 @@ const STRINGS = {
     fIngredients: 'Ainesosat',
     fIngredientsHint: '(pilkulla erotettuna)',
     fSpice: 'Tulisuus',
-    fServes: 'Annoskoko',
     commonFields: 'Yhteiset kentät',
     fPrice: 'Hinta (€)',
     fCategory: 'Kategoria',
@@ -214,6 +216,10 @@ const STRINGS = {
     addOption: 'Lisää vaihtoehto',
     removeOption: 'Poista vaihtoehto',
     removeOptionGroup: 'Poista valintaryhmä',
+    moveOptionGroupUp: 'Siirrä valintaryhmää ylös',
+    moveOptionGroupDown: 'Siirrä valintaryhmää alas',
+    moveOptionUp: 'Siirrä vaihtoehtoa ylös',
+    moveOptionDown: 'Siirrä vaihtoehtoa alas',
     tInStock: 'Saatavilla',
     tInStockSub: 'Näkyy asiakkaille kun päällä',
     tPopular: 'Suosittu ⭐',

@@ -11,7 +11,7 @@ import { Switch } from '../ui/switch'
 import { Badge } from '../ui/badge'
 import { createDish, updateDish, uploadImage } from '../../hooks/useAdmin'
 import { useAdminLang } from '../../lib/adminLang'
-import { Upload, X, Plus } from 'lucide-react'
+import { Upload, X, Plus, ChevronUp, ChevronDown } from 'lucide-react'
 import { toast } from 'sonner'
 
 const DEFAULT_DISH_IMAGE = '/images/sunnah-cafe-logo.png'
@@ -32,11 +32,6 @@ const SPICE_OPTIONS = [
   { key: 'hot', EN: 'Hot spice', FI: 'Tulinen' },
 ]
 
-const SERVES_OPTIONS = {
-  EN: ['Serves 1', 'Serves 2', 'Serves 3–4'],
-  FI: ['1 hengelle', '2 hengelle', '3–4 hengelle'],
-}
-
 function empty(categories) {
   return {
     name:            { EN: '', FI: '' },
@@ -53,7 +48,6 @@ function empty(categories) {
     meta: {
       halal:  true,
       spice:  { EN: 'Mild spice', FI: 'Mieto tulisuus' },
-      serves: { EN: 'Serves 1', FI: '1 hengelle' },
       optionGroups: [],
     },
   }
@@ -78,7 +72,6 @@ function dishToForm(dish) {
     meta: {
       halal:  dish.meta?.halal ?? true,
       spice:  dish.meta?.spice ? { ...dish.meta.spice } : null,
-      serves: dish.meta?.serves ? { ...dish.meta.serves } : { EN: 'Serves 1', FI: '1 hengelle' },
       optionGroups: dish.meta?.optionGroups ? JSON.parse(JSON.stringify(dish.meta.optionGroups)) : [],
     },
   }
@@ -92,7 +85,6 @@ function LangFields({ lang, form, setField, setForm, t }) {
     || (option.key === 'mild' && form.meta.spice?.FI === 'Mieto')
     || (option.key === 'medium' && form.meta.spice?.FI === 'Keskivahva')
   )) || SPICE_OPTIONS[0]
-  const servesIdx = SERVES_OPTIONS.EN.indexOf(form.meta.serves.EN)
 
   return (
     <div className="space-y-4">
@@ -141,44 +133,27 @@ function LangFields({ lang, form, setField, setForm, t }) {
           required
         />
       </div>
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <Label htmlFor={`spice-${lang}`}>{t.fSpice}</Label>
-          <select
-            id={`spice-${lang}`}
-            className="mt-1 h-10 w-full rounded-xl border border-brand-border bg-white px-3 text-sm text-brand-text-dark focus:outline-none focus:ring-2 focus:ring-brand-gold"
-            value={spiceOption.key}
-            onChange={e => {
-              const option = SPICE_OPTIONS.find((item) => item.key === e.target.value)
-              setForm((current) => ({
-                ...current,
-                meta: {
-                  ...current.meta,
-                  spice: option?.key === 'none'
-                    ? null
-                    : { EN: option.EN, FI: option.FI },
-                },
-              }))
-            }}
-          >
-            {SPICE_OPTIONS.map((option) => <option key={option.key} value={option.key}>{option[lang]}</option>)}
-          </select>
-        </div>
-        <div>
-          <Label htmlFor={`serves-${lang}`}>{t.fServes} *</Label>
-          <select
-            id={`serves-${lang}`}
-            className="mt-1 h-10 w-full rounded-xl border border-brand-border bg-white px-3 text-sm text-brand-text-dark focus:outline-none focus:ring-2 focus:ring-brand-gold"
-            value={form.meta.serves[lang]}
-            onChange={e => {
-              const idx = SERVES_OPTIONS[lang].indexOf(e.target.value)
-              setField('meta.serves', 'EN', SERVES_OPTIONS.EN[idx])
-              setField('meta.serves', 'FI', SERVES_OPTIONS.FI[idx])
-            }}
-          >
-            {SERVES_OPTIONS[lang].map(o => <option key={o} value={o}>{o}</option>)}
-          </select>
-        </div>
+      <div>
+        <Label htmlFor={`spice-${lang}`}>{t.fSpice}</Label>
+        <select
+          id={`spice-${lang}`}
+          className="mt-1 h-10 w-full rounded-xl border border-brand-border bg-white px-3 text-sm text-brand-text-dark focus:outline-none focus:ring-2 focus:ring-brand-gold"
+          value={spiceOption.key}
+          onChange={e => {
+            const option = SPICE_OPTIONS.find((item) => item.key === e.target.value)
+            setForm((current) => ({
+              ...current,
+              meta: {
+                ...current.meta,
+                spice: option?.key === 'none'
+                  ? null
+                  : { EN: option.EN, FI: option.FI },
+              },
+            }))
+          }}
+        >
+          {SPICE_OPTIONS.map((option) => <option key={option.key} value={option.key}>{option[lang]}</option>)}
+        </select>
       </div>
     </div>
   )
@@ -269,6 +244,17 @@ export default function DishForm({ dish, categories, open, onClose, onSaved }) {
     }))
   }
 
+  function moveOptionGroup(groupId, direction) {
+    setForm((current) => {
+      const groups = [...current.meta.optionGroups]
+      const index = groups.findIndex((group) => group.id === groupId)
+      const targetIndex = index + direction
+      if (index < 0 || targetIndex < 0 || targetIndex >= groups.length) return current
+      ;[groups[index], groups[targetIndex]] = [groups[targetIndex], groups[index]]
+      return { ...current, meta: { ...current.meta, optionGroups: groups } }
+    })
+  }
+
   function addOption(groupId) {
     const option = { id: `option-${Date.now()}`, label: { FI: '', EN: '' }, inStock: true, priceAdjustmentCents: 0 }
     const group = form.meta.optionGroups.find((item) => item.id === groupId)
@@ -285,6 +271,16 @@ export default function DishForm({ dish, categories, open, onClose, onSaved }) {
   function removeOption(groupId, optionId) {
     const group = form.meta.optionGroups.find((item) => item.id === groupId)
     updateOptionGroup(groupId, { options: group.options.filter((option) => option.id !== optionId) })
+  }
+
+  function moveOption(groupId, optionId, direction) {
+    const group = form.meta.optionGroups.find((item) => item.id === groupId)
+    const options = [...group.options]
+    const index = options.findIndex((option) => option.id === optionId)
+    const targetIndex = index + direction
+    if (index < 0 || targetIndex < 0 || targetIndex >= options.length) return
+    ;[options[index], options[targetIndex]] = [options[targetIndex], options[index]]
+    updateOptionGroup(groupId, { options })
   }
 
   async function handleImageUpload(e) {
@@ -324,7 +320,6 @@ export default function DishForm({ dish, categories, open, onClose, onSaved }) {
         meta: {
           halal:  form.meta.halal,
           spice:  form.meta.spice,
-          serves: form.meta.serves,
           optionGroups: form.meta.optionGroups,
         },
       }
@@ -475,13 +470,33 @@ export default function DishForm({ dish, categories, open, onClose, onSaved }) {
             </div>
 
             <div className="mt-4 space-y-4">
-              {form.meta.optionGroups.map((group) => (
+              {form.meta.optionGroups.map((group, groupIndex) => (
                 <div key={group.id} className="rounded-lg border border-brand-border bg-brand-bg p-3">
                   <div className="flex items-center justify-between gap-3">
                     <p className="text-sm font-semibold text-brand-text-dark">{t.optionGroup}</p>
-                    <button type="button" onClick={() => removeOptionGroup(group.id)} className="grid h-8 w-8 place-items-center rounded-md text-brand-red" title={t.removeOptionGroup}>
-                      <X className="h-4 w-4" />
-                    </button>
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => moveOptionGroup(group.id, -1)}
+                        disabled={groupIndex === 0}
+                        className="grid h-8 w-8 place-items-center rounded-md text-brand-text-muted disabled:opacity-30"
+                        title={t.moveOptionGroupUp}
+                      >
+                        <ChevronUp className="h-4 w-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => moveOptionGroup(group.id, 1)}
+                        disabled={groupIndex === form.meta.optionGroups.length - 1}
+                        className="grid h-8 w-8 place-items-center rounded-md text-brand-text-muted disabled:opacity-30"
+                        title={t.moveOptionGroupDown}
+                      >
+                        <ChevronDown className="h-4 w-4" />
+                      </button>
+                      <button type="button" onClick={() => removeOptionGroup(group.id)} className="grid h-8 w-8 place-items-center rounded-md text-brand-red" title={t.removeOptionGroup}>
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
                   </div>
                   <div className="mt-3 grid grid-cols-2 gap-3">
                     {['FI', 'EN'].map((lang) => (
@@ -506,8 +521,8 @@ export default function DishForm({ dish, categories, open, onClose, onSaved }) {
                   </div>
 
                   <div className="mt-3 space-y-2">
-                    {group.options.map((option) => (
-                      <div key={option.id} className="grid grid-cols-2 items-end gap-2 sm:grid-cols-[1fr_1fr_100px_auto_auto]">
+                    {group.options.map((option, optionIndex) => (
+                      <div key={option.id} className="grid grid-cols-2 items-end gap-2 sm:grid-cols-[1fr_1fr_100px_auto_auto_auto]">
                         {['FI', 'EN'].map((lang) => (
                           <div key={lang}>
                             <Label htmlFor={`${option.id}-${lang}`} className="text-xs">{t.optionName} ({lang})</Label>
@@ -536,6 +551,26 @@ export default function DishForm({ dish, categories, open, onClose, onSaved }) {
                         <div className="pb-1 text-center">
                           <Label className="text-xs">{t.optionInStock}</Label>
                           <Switch className="mt-2" checked={option.inStock} onCheckedChange={(inStock) => updateOption(group.id, option.id, { inStock })} />
+                        </div>
+                        <div className="mb-0.5 flex items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() => moveOption(group.id, option.id, -1)}
+                            disabled={optionIndex === 0}
+                            className="grid h-10 w-8 place-items-center rounded-md border border-brand-border text-brand-text-muted disabled:opacity-30"
+                            title={t.moveOptionUp}
+                          >
+                            <ChevronUp className="h-4 w-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => moveOption(group.id, option.id, 1)}
+                            disabled={optionIndex === group.options.length - 1}
+                            className="grid h-10 w-8 place-items-center rounded-md border border-brand-border text-brand-text-muted disabled:opacity-30"
+                            title={t.moveOptionDown}
+                          >
+                            <ChevronDown className="h-4 w-4" />
+                          </button>
                         </div>
                         <button type="button" onClick={() => removeOption(group.id, option.id)} className="mb-0.5 grid h-10 w-10 place-items-center rounded-md border border-brand-border text-brand-red" title={t.removeOption}>
                           <X className="h-4 w-4" />

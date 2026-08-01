@@ -19,6 +19,5 @@ export const SEED_DISHES: Dish[] = (dishes as unknown as Dish[]).map((dish) => (
 	meta: {
 		...dish.meta,
 		spice: dish.meta.spice ? bilingual(dish.meta.spice) : null,
-		serves: bilingual(dish.meta.serves),
 	},
 }))

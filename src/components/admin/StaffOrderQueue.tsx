@@ -15,8 +15,8 @@ import { useAdminLang } from '../../lib/adminLang'
 import { Button } from '../ui/button'
 
 const copy = {
-  EN: { empty: 'No active orders', refresh: 'Refresh orders', accept: 'Accept', ready: 'Mark ready', complete: 'Handed over / delivered', cancel: 'Reject / cancel', payment: 'Mark payment received', note: 'Order note', closed: 'Closed', approval_required: 'Open' },
-  FI: { empty: 'Ei aktiivisia tilauksia', refresh: 'Päivitä tilaukset', accept: 'Hyväksy', ready: 'Merkitse valmiiksi', complete: 'Luovutettu / toimitettu', cancel: 'Hylkää / peruuta', payment: 'Merkitse maksetuksi', note: 'Tilausohje', closed: 'Suljettu', approval_required: 'Auki' },
+  EN: { empty: 'No active orders', refresh: 'Refresh orders', accept: 'Accept', ready: 'Mark ready', complete: 'Handed over / delivered', cancel: 'Reject / cancel', payment: 'Mark payment received', verifyOnlinePayment: 'Check the order number and exact amount in SumUp before marking the payment as received.', note: 'Order note', closed: 'Closed', approval_required: 'Open' },
+  FI: { empty: 'Ei aktiivisia tilauksia', refresh: 'Päivitä tilaukset', accept: 'Hyväksy', ready: 'Merkitse valmiiksi', complete: 'Luovutettu / toimitettu', cancel: 'Hylkää / peruuta', payment: 'Merkitse maksetuksi', verifyOnlinePayment: 'Tarkista SumUpista tilausnumero ja tarkka summa ennen maksun merkitsemistä vastaanotetuksi.', note: 'Tilausohje', closed: 'Suljettu', approval_required: 'Auki' },
 }
 
 const nextActions = {
@@ -112,7 +112,11 @@ export default function StaffOrderQueue() {
           const action = order.status === 'awaiting_staff_approval'
             ? [order.paymentMethod === 'sumup_online' ? 'awaiting_payment' : 'accepted', 'accept']
             : nextActions[order.status]
-          const needsPayment = order.paymentMethod !== 'sumup_online' && order.paymentStatus === 'unpaid'
+          const needsOnlinePayment = order.paymentMethod === 'sumup_online'
+            && order.status === 'awaiting_payment'
+            && order.paymentStatus === 'pending'
+          const needsPayment = needsOnlinePayment
+            || (order.paymentMethod !== 'sumup_online' && order.paymentStatus === 'unpaid')
           const canComplete = order.status !== 'ready' || !needsPayment
           return (
             <article key={order.id} className="border border-brand-border border-l-4 border-l-brand-gold bg-white p-4 shadow-sm sm:p-5">
@@ -154,14 +158,20 @@ export default function StaffOrderQueue() {
 
               <div className="mt-4 flex flex-wrap items-center gap-2 text-sm font-bold text-brand-text-muted">
                 <Clock3 size={16} />
-                <span>{new Date(order.createdAt).toLocaleTimeString(lang === 'FI' ? 'fi-FI' : lang === 'SO' ? 'so-SO' : 'en-GB', { hour: '2-digit', minute: '2-digit' })}</span>
+                <span>{new Date(order.createdAt).toLocaleTimeString(lang === 'FI' ? 'fi-FI' : 'en-GB', { hour: '2-digit', minute: '2-digit' })}</span>
                 {order.paymentMethod === 'cash_on_fulfillment' ? <Banknote size={17} /> : <CreditCard size={17} />}
                 <span>{getPaymentStatusLabel(order.paymentMethod, order.paymentStatus, lang)}</span>
               </div>
 
+              {needsOnlinePayment && (
+                <p className="mt-4 border-l-4 border-brand-gold bg-brand-gold/10 p-3 text-sm font-bold leading-5">
+                  {labels.verifyOnlinePayment}
+                </p>
+              )}
+
               <div className="mt-5 flex flex-wrap gap-2">
                 {needsPayment && (
-                  <Button variant="outline" disabled={busyId === order.id} onClick={() => run(order.id, () => markPaymentReceived(order.id))}>
+                  <Button variant="outline" disabled={busyId === order.id} onClick={() => run(order.id, () => markPaymentReceived(order.id, order.totalCents, order.paymentMethod))}>
                     <CreditCard className="mr-2 h-4 w-4" /> {labels.payment}
                   </Button>
                 )}

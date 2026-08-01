@@ -1,7 +1,7 @@
-import { ArrowLeft, CheckCircle2, Clock3, RefreshCw } from 'lucide-react'
+import { ArrowLeft, CheckCircle2, Clock3, ExternalLink, RefreshCw } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { getOrderStatus, startSumupPayment } from '../data/orderRepository'
+import { getOrderStatus } from '../data/orderRepository'
 import { getL10n, getPaymentStatusLabel, UI } from '../data/i18n'
 import { useCart } from '../hooks/useCart'
 import { formatPrice } from '../lib/format'
@@ -13,6 +13,7 @@ function getCurrentLang() {
 }
 
 const finishedStatuses = new Set(['completed', 'cancelled', 'expired'])
+const SUMUP_PAYMENT_LINK = 'https://pay.sumup.com/b2c/QVO7LWSX'
 
 export default function OrderStatusPage() {
   const { orderId } = useParams()
@@ -25,7 +26,6 @@ export default function OrderStatusPage() {
   const [order, setOrder] = useState(null)
   const [error, setError] = useState('')
   const [refreshing, setRefreshing] = useState(false)
-  const [startingPayment, setStartingPayment] = useState(false)
 
   async function refresh() {
     if (!orderId || !token) return
@@ -39,18 +39,6 @@ export default function OrderStatusPage() {
       setError(UI.orderStatusFailed[lang])
     } finally {
       setRefreshing(false)
-    }
-  }
-
-  async function handlePayment() {
-    if (!orderId || !token || startingPayment) return
-    setStartingPayment(true)
-    try {
-      window.location.assign(await startSumupPayment(orderId, token))
-    } catch (paymentError) {
-      console.error('SumUp checkout could not be created:', paymentError)
-      setError(UI.paymentStartFailed[lang])
-      setStartingPayment(false)
     }
   }
 
@@ -109,9 +97,31 @@ export default function OrderStatusPage() {
         {error && <p role="alert" className="mt-5 rounded-lg bg-red-50 p-4 text-sm font-bold text-brand-red">{error}</p>}
 
         {order?.status === 'awaiting_payment' && order.paymentMethod === 'sumup_online' && (
-          <Button className="mt-5 h-12 w-full text-base" disabled={startingPayment} onClick={handlePayment}>
-            {startingPayment ? UI.startingPayment[lang] : UI.payNow[lang]}
-          </Button>
+          <section className="mt-5 border border-brand-gold bg-brand-gold/10 p-5">
+            <h2 className="font-display text-xl font-bold">{UI.manualPaymentTitle[lang]}</h2>
+            <p className="mt-2 text-sm leading-6 text-brand-text-muted">{UI.manualPaymentIntro[lang]}</p>
+            <dl className="mt-4 grid gap-3 sm:grid-cols-2">
+              <div className="bg-brand-card p-4">
+                <dt className="text-xs font-bold uppercase text-brand-text-muted">{UI.orderNumber[lang]}</dt>
+                <dd className="mt-1 font-display text-2xl font-bold">#{String(order.ticketNumber).padStart(2, '0')}</dd>
+              </div>
+              <div className="bg-brand-card p-4">
+                <dt className="text-xs font-bold uppercase text-brand-text-muted">{UI.paymentAmount[lang]}</dt>
+                <dd className="mt-1 font-display text-2xl font-bold">{formatPrice(order.totalCents / 100)}</dd>
+              </div>
+            </dl>
+            <ol className="mt-4 list-decimal space-y-2 pl-5 text-sm font-bold leading-6">
+              <li>{UI.manualPaymentNameInstruction[lang].replace('{number}', `#${String(order.ticketNumber).padStart(2, '0')}`)}</li>
+              <li>{UI.manualPaymentAmountInstruction[lang].replace('{amount}', formatPrice(order.totalCents / 100))}</li>
+              <li>{UI.manualPaymentVerification[lang]}</li>
+            </ol>
+            <Button asChild className="mt-5 h-12 w-full text-base">
+              <a href={SUMUP_PAYMENT_LINK} target="_blank" rel="noreferrer">
+                {UI.payNow[lang]}
+                <ExternalLink size={18} aria-hidden="true" />
+              </a>
+            </Button>
+          </section>
         )}
 
         {order && (

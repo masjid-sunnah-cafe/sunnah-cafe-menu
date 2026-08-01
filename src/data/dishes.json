@@ -33,8 +33,7 @@
     ],
     "meta": {
       "halal": true,
-      "spice": { "EN": "Medium spice", "FI": "Keskivahva", "SO": "Dhexdhexaad" },
-      "serves": { "EN": "Serves 1", "FI": "1 hengelle", "SO": "1 qof" }
+      "spice": { "EN": "Medium spice", "FI": "Keskivahva", "SO": "Dhexdhexaad" }
     },
     "sortOrder": 0
   },
@@ -71,8 +70,7 @@
     ],
     "meta": {
       "halal": true,
-      "spice": { "EN": "Mild spice", "FI": "Mieto", "SO": "Aad u yar" },
-      "serves": { "EN": "Serves 1", "FI": "1 hengelle", "SO": "1 qof" }
+      "spice": { "EN": "Mild spice", "FI": "Mieto", "SO": "Aad u yar" }
     },
     "sortOrder": 1
   },
@@ -109,8 +107,7 @@
     ],
     "meta": {
       "halal": true,
-      "spice": { "EN": "Mild spice", "FI": "Mieto", "SO": "Aad u yar" },
-      "serves": { "EN": "Serves 1", "FI": "1 hengelle", "SO": "1 qof" }
+      "spice": { "EN": "Mild spice", "FI": "Mieto", "SO": "Aad u yar" }
     },
     "sortOrder": 2
   },
@@ -147,8 +144,7 @@
     ],
     "meta": {
       "halal": true,
-      "spice": { "EN": "Mild spice", "FI": "Mieto", "SO": "Aad u yar" },
-      "serves": { "EN": "Serves 1", "FI": "1 hengelle", "SO": "1 qof" }
+      "spice": { "EN": "Mild spice", "FI": "Mieto", "SO": "Aad u yar" }
     },
     "sortOrder": 0
   },
@@ -185,8 +181,7 @@
     ],
     "meta": {
       "halal": true,
-      "spice": { "EN": "Medium spice", "FI": "Keskivahva", "SO": "Dhexdhexaad" },
-      "serves": { "EN": "Serves 1", "FI": "1 hengelle", "SO": "1 qof" }
+      "spice": { "EN": "Medium spice", "FI": "Keskivahva", "SO": "Dhexdhexaad" }
     },
     "sortOrder": 1
   },
@@ -224,8 +219,7 @@
     ],
     "meta": {
       "halal": true,
-      "spice": { "EN": "Mild spice", "FI": "Mieto", "SO": "Aad u yar" },
-      "serves": { "EN": "Serves 1", "FI": "1 hengelle", "SO": "1 qof" }
+      "spice": { "EN": "Mild spice", "FI": "Mieto", "SO": "Aad u yar" }
     },
     "sortOrder": 0
   },
@@ -262,8 +256,7 @@
     ],
     "meta": {
       "halal": true,
-      "spice": { "EN": "Mild spice", "FI": "Mieto", "SO": "Aad u yar" },
-      "serves": { "EN": "Serves 1", "FI": "1 hengelle", "SO": "1 qof" }
+      "spice": { "EN": "Mild spice", "FI": "Mieto", "SO": "Aad u yar" }
     },
     "sortOrder": 0
   }

@@ -1,6 +1,6 @@
 import type { RealtimeChannel } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
-import type { Order, OrderStatus } from '../lib/types'
+import type { Order, OrderStatus, PaymentMethod } from '../lib/types'
 
 function requireSupabase() {
   if (!supabase) throw new Error('Staff orders require a configured Supabase project.')
@@ -79,10 +79,16 @@ export async function transitionOrder(orderId: string, status: OrderStatus): Pro
   if (error) throw new Error(error.message)
 }
 
-export async function markPaymentReceived(orderId: string): Promise<void> {
-  const { error } = await requireSupabase().rpc('mark_fulfillment_payment_received', {
-    target_order_id: orderId,
-  })
+export async function markPaymentReceived(orderId: string, amountCents: number, paymentMethod: PaymentMethod): Promise<void> {
+  const client = requireSupabase()
+  const { error } = paymentMethod === 'sumup_online'
+    ? await client.rpc('mark_manual_sumup_payment_received', {
+        target_order_id: orderId,
+        confirmed_amount_cents: amountCents,
+      })
+    : await client.rpc('mark_fulfillment_payment_received', {
+        target_order_id: orderId,
+      })
   if (error) throw new Error(error.message)
 }
 

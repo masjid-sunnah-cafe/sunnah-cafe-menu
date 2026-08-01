@@ -28,7 +28,7 @@ function getSpiceLabel(spice, lang) {
 
 function getAllergenLabel(allergen, lang) {
   if (allergen.label.EN === 'May contain dairy') {
-    return lang === 'FI' ? 'Sisältää maitoa' : lang === 'EN' ? 'Contains dairy' : 'Waxa ku jira caano'
+    return lang === 'FI' ? 'Sisältää maitoa' : 'Contains dairy'
   }
   return getL10n(allergen.label, lang)
 }
@@ -148,7 +148,6 @@ export default function DishDetailSheet({ dish, onClose, lang }) {
                   <Badge variant="halal">Halal</Badge>
                 )}
                 {dish.meta.spice && <Badge variant="meta">{getSpiceLabel(dish.meta.spice, lang)}</Badge>}
-                <Badge variant="meta">{getL10n(dish.meta.serves, lang)}</Badge>
               </div>
 
               {optionGroups.length > 0 && (

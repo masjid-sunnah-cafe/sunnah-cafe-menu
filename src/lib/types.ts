@@ -40,7 +40,6 @@ export interface DishOptionGroup {
 export interface DishMeta {
   halal: boolean
   spice: Localized | null
-  serves: Localized
   optionGroups?: DishOptionGroup[]
 }
 

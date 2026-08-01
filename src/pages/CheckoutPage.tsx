@@ -1,4 +1,4 @@
-import { ArrowLeft, Banknote, CreditCard, Globe2 } from 'lucide-react'
+import { ArrowLeft, CreditCard, Globe2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { createOrder } from '../data/orderRepository'
@@ -20,7 +20,6 @@ const LOCATIONS: FulfillmentLocation[] = [
 const PAYMENT_OPTIONS: { id: PaymentMethod; icon: typeof Globe2 }[] = [
   { id: 'sumup_online', icon: Globe2 },
   { id: 'card_on_fulfillment', icon: CreditCard },
-  { id: 'cash_on_fulfillment', icon: Banknote },
 ]
 
 function getCurrentLang() {
@@ -129,9 +128,7 @@ export default function CheckoutPage() {
                 <span>
                   <span className="block font-bold">{UI.paymentOptions[id][lang]}</span>
                   <span className="mt-1 block text-sm leading-5 text-brand-text-muted">
-                    {id === 'card_on_fulfillment' && location !== 'counter_pickup'
-                      ? UI.cardDeliveredHelp[lang]
-                      : UI.paymentHelp[id][lang]}
+                    {UI.paymentHelp[id][lang]}
                   </span>
                 </span>
               </label>
