@@ -54,6 +54,7 @@ export default function DishDetailSheet({ dish, onClose, lang }) {
   ))
   const optionPriceAdjustment = selections.reduce((total, selection) => total + selection.priceAdjustmentCents, 0) / 100
   const unitPrice = dish ? dish.price + optionPriceAdjustment : 0
+  const hasGoodToKnow = Boolean(dish?.meta.halal || dish?.meta.spice)
 
   useEffect(() => {
     setQuantity(1)
@@ -139,16 +140,18 @@ export default function DishDetailSheet({ dish, onClose, lang }) {
               )}
 
               {/* Good to know */}
-              <Separator className="mt-6" />
-              <h3 className="mt-4 text-[13px] font-bold uppercase tracking-[0.18em] text-brand-text-muted">
-                {UI.goodToKnowLabel[lang]}
-              </h3>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {dish.meta.halal && (
-                  <Badge variant="halal">Halal</Badge>
-                )}
-                {dish.meta.spice && <Badge variant="meta">{getSpiceLabel(dish.meta.spice, lang)}</Badge>}
-              </div>
+              {hasGoodToKnow && (
+                <>
+                  <Separator className="mt-6" />
+                  <h3 className="mt-4 text-[13px] font-bold uppercase tracking-[0.18em] text-brand-text-muted">
+                    {UI.goodToKnowLabel[lang]}
+                  </h3>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {dish.meta.halal && <Badge variant="halal">Halal</Badge>}
+                    {dish.meta.spice && <Badge variant="meta">{getSpiceLabel(dish.meta.spice, lang)}</Badge>}
+                  </div>
+                </>
+              )}
 
               {optionGroups.length > 0 && (
                 <>
